@@ -38,9 +38,8 @@ export function LoginForm({
         password: value.password,
       });
 
-      await queryClient.setQueryData(["session"], response.user);
-
-      navigate({ to: "/home" });
+      await queryClient.setQueryData(["session"], response);
+      await navigate({ to: "/home" });
     },
   });
 

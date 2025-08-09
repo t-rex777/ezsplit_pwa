@@ -8,19 +8,24 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as HomeRouteImport } from './routes/home'
-import { Route as IndexRouteImport } from './routes/index'
+import { createFileRoute } from '@tanstack/react-router'
 
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as authAuthRouteImport } from './routes/(auth)/_auth'
+import { Route as appAppRouteImport } from './routes/(app)/_app'
+import { Route as authAuthLoginRouteImport } from './routes/(auth)/_auth.login'
+import { Route as appAppHomeRouteImport } from './routes/(app)/_app.home'
+
+const authRouteImport = createFileRoute('/(auth)')()
+const appRouteImport = createFileRoute('/(app)')()
+
+const authRoute = authRouteImport.update({
+  id: '/(auth)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
+const appRoute = appRouteImport.update({
+  id: '/(app)',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,51 +33,81 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authAuthRoute = authAuthRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => authRoute,
+} as any)
+const appAppRoute = appAppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => appRoute,
+} as any)
+const authAuthLoginRoute = authAuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => authAuthRoute,
+} as any)
+const appAppHomeRoute = appAppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => appAppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/home': typeof HomeRoute
-  '/login': typeof LoginRoute
+  '/': typeof authAuthRouteWithChildren
+  '/home': typeof appAppHomeRoute
+  '/login': typeof authAuthLoginRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/home': typeof HomeRoute
-  '/login': typeof LoginRoute
+  '/': typeof authAuthRouteWithChildren
+  '/home': typeof appAppHomeRoute
+  '/login': typeof authAuthLoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/home': typeof HomeRoute
-  '/login': typeof LoginRoute
+  '/(app)': typeof appRouteWithChildren
+  '/(app)/_app': typeof appAppRouteWithChildren
+  '/(auth)': typeof authRouteWithChildren
+  '/(auth)/_auth': typeof authAuthRouteWithChildren
+  '/(app)/_app/home': typeof appAppHomeRoute
+  '/(auth)/_auth/login': typeof authAuthLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/home' | '/login'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/home' | '/login'
-  id: '__root__' | '/' | '/home' | '/login'
+  id:
+    | '__root__'
+    | '/'
+    | '/(app)'
+    | '/(app)/_app'
+    | '/(auth)'
+    | '/(auth)/_auth'
+    | '/(app)/_app/home'
+    | '/(auth)/_auth/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  HomeRoute: typeof HomeRoute
-  LoginRoute: typeof LoginRoute
+  appRoute: typeof appRouteWithChildren
+  authRoute: typeof authRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/(auth)': {
+      id: '/(auth)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof authRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
+    '/(app)': {
+      id: '/(app)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof appRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,13 +117,84 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/_auth': {
+      id: '/(auth)/_auth'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof authAuthRouteImport
+      parentRoute: typeof authRoute
+    }
+    '/(app)/_app': {
+      id: '/(app)/_app'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof appAppRouteImport
+      parentRoute: typeof appRoute
+    }
+    '/(auth)/_auth/login': {
+      id: '/(auth)/_auth/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof authAuthLoginRouteImport
+      parentRoute: typeof authAuthRoute
+    }
+    '/(app)/_app/home': {
+      id: '/(app)/_app/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof appAppHomeRouteImport
+      parentRoute: typeof appAppRoute
+    }
   }
 }
 
+interface appAppRouteChildren {
+  appAppHomeRoute: typeof appAppHomeRoute
+}
+
+const appAppRouteChildren: appAppRouteChildren = {
+  appAppHomeRoute: appAppHomeRoute,
+}
+
+const appAppRouteWithChildren =
+  appAppRoute._addFileChildren(appAppRouteChildren)
+
+interface appRouteChildren {
+  appAppRoute: typeof appAppRouteWithChildren
+}
+
+const appRouteChildren: appRouteChildren = {
+  appAppRoute: appAppRouteWithChildren,
+}
+
+const appRouteWithChildren = appRoute._addFileChildren(appRouteChildren)
+
+interface authAuthRouteChildren {
+  authAuthLoginRoute: typeof authAuthLoginRoute
+}
+
+const authAuthRouteChildren: authAuthRouteChildren = {
+  authAuthLoginRoute: authAuthLoginRoute,
+}
+
+const authAuthRouteWithChildren = authAuthRoute._addFileChildren(
+  authAuthRouteChildren,
+)
+
+interface authRouteChildren {
+  authAuthRoute: typeof authAuthRouteWithChildren
+}
+
+const authRouteChildren: authRouteChildren = {
+  authAuthRoute: authAuthRouteWithChildren,
+}
+
+const authRouteWithChildren = authRoute._addFileChildren(authRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  HomeRoute: HomeRoute,
-  LoginRoute: LoginRoute,
+  appRoute: appRouteWithChildren,
+  authRoute: authRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
