@@ -65,9 +65,9 @@ export const authService = {
 
   // Logout user
   logout: async (): Promise<void> => {
-    await apiCall({
-      method: "POST",
-      url: "/auth/logout",
+    return await apiCall({
+      method: "DELETE",
+      url: "/session",
     });
     // Cookies will be cleared by the server
   },

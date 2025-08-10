@@ -1,8 +1,10 @@
+import { authService } from "@/api/services/auth";
 import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useTheme } from "@/lib/theme";
-import { createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Bell,
   ChevronRight,
@@ -68,6 +70,16 @@ function SettingsPage() {
     },
   ];
 
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const handleLogOut = async () => {
+    // TODO: check here why its going /sessions/new?
+    navigate({ to: "/login", replace: true });
+    authService.logout();
+    queryClient.resetQueries();
+  };
+
   return (
     <Suspense
       fallback={
@@ -130,6 +142,7 @@ function SettingsPage() {
             {/* Logout Button */}
             <div className="pt-4">
               <Button
+                onClick={handleLogOut}
                 variant="outline"
                 className="w-full justify-start gap-3 h-12 text-destructive border-destructive/20 hover:bg-destructive/5"
               >
