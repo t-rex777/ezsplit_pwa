@@ -8,7 +8,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Receipt } from "lucide-react";
 import { Suspense } from "react";
 
-export const Route = createFileRoute("/(app)/_app/expenses")({
+export const Route = createFileRoute("/(app)/_app/expenses/list")({
   component: ExpensesPage,
 });
 

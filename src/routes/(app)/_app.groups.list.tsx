@@ -2,11 +2,11 @@ import { groupsService } from "@/api/services/groups";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { ChevronRight, Plus, Users } from "lucide-react";
 import { Suspense } from "react";
 
-export const Route = createFileRoute("/(app)/_app/groups")({
+export const Route = createFileRoute("/(app)/_app/groups/list")({
   component: GroupsPage,
 });
 
@@ -34,9 +34,15 @@ function GroupsPage() {
               <Users className="h-6 w-6 text-primary" />
               <h1 className="text-2xl font-bold">Groups</h1>
             </div>
-            <Button size="sm" className="rounded-full h-10 w-10 p-0">
-              <Plus className="h-5 w-5" />
-            </Button>
+
+            <Link to="/groups/new">
+              <Button
+                size="sm"
+                className="rounded-full h-10 w-10 p-0 cursor-pointer"
+              >
+                <Plus className="h-5 w-5" />
+              </Button>
+            </Link>
           </div>
 
           {/* Groups List */}
@@ -87,5 +93,3 @@ function GroupsPage() {
     </Suspense>
   );
 }
-
-

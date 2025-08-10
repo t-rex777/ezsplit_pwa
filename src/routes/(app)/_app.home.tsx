@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { Home, Plus, Receipt, TrendingUp, Users } from "lucide-react";
 
 export const Route = createFileRoute("/(app)/_app/home")({
@@ -18,22 +18,27 @@ function HomePage() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                <Plus className="h-6 w-6 text-primary" />
+          <Link to="/expenses/new">
+            <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                  <Plus className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-sm font-medium">New Expense</span>
               </div>
-              <span className="text-sm font-medium">New Expense</span>
-            </div>
-          </Card>
-          <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                <Users className="h-6 w-6 text-primary" />
+            </Card>
+          </Link>
+
+          <Link to="/groups/new">
+            <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-sm font-medium">New Group</span>
               </div>
-              <span className="text-sm font-medium">New Group</span>
-            </div>
-          </Card>
+            </Card>
+          </Link>
         </div>
 
         {/* Overview Cards */}

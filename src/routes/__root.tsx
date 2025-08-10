@@ -1,8 +1,9 @@
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { authService } from "@/api/services/auth";
+import { Toaster } from "@/components/ui/toaster";
 import type { QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Suspense } from "react";
 
 export interface MyRouterContext {
@@ -25,7 +26,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     return (
       <Suspense>
         <Outlet />
-        <TanStackRouterDevtools />
+        <Toaster />
+        {/* <TanStackRouterDevtools /> */}
+        <ReactQueryDevtools initialIsOpen={false} />
       </Suspense>
     );
   },

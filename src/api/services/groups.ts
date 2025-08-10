@@ -33,6 +33,13 @@ export interface GroupsResponse {
   };
 }
 
+export interface CreateGroupParams {
+  name: string;
+  description: string;
+  created_by_id: string;
+  user_ids: string[];
+}
+
 // Groups service methods
 export const groupsService = {
   // Get all groups
@@ -54,10 +61,7 @@ export const groupsService = {
   },
 
   // Create new group
-  createGroup: async (groupData: {
-    name: string;
-    description?: string;
-  }): Promise<Group> => {
+  createGroup: async (groupData: CreateGroupParams): Promise<Group> => {
     const response = await apiCall<{ data: Group }>({
       method: "POST",
       url: "/groups",
@@ -71,17 +75,43 @@ export const groupsService = {
   // Update group
   updateGroup: async (
     id: string,
-    groupData: {
-      name?: string;
-      description?: string;
-      user_ids?: string[];
-    },
+    groupData: Partial<CreateGroupParams>,
   ): Promise<Group> => {
     const response = await apiCall<{ data: Group }>({
       method: "PUT",
       url: `/groups/${id}`,
       data: {
         group: groupData,
+      },
+    });
+    return response.data;
+  },
+
+  // Add users to group
+  addUsersToGroup: async (
+    groupId: string,
+    userIds: string[],
+  ): Promise<Group> => {
+    const response = await apiCall<{ data: Group }>({
+      method: "POST",
+      url: `/groups/${groupId}/add_users`,
+      data: {
+        user_ids: userIds,
+      },
+    });
+    return response.data;
+  },
+
+  // Remove users from group
+  removeUsersFromGroup: async (
+    groupId: string,
+    userIds: string[],
+  ): Promise<Group> => {
+    const response = await apiCall<{ data: Group }>({
+      method: "DELETE",
+      url: `/groups/${groupId}/remove_users`,
+      data: {
+        user_ids: userIds,
       },
     });
     return response.data;

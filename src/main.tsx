@@ -1,4 +1,3 @@
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   ErrorComponent,
   RouterProvider,
@@ -11,9 +10,9 @@ import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "./lib/theme";
 import reportWebVitals from "./reportWebVitals.ts";
 import "./styles.css";
-import { ThemeProvider } from "./lib/theme";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,7 +55,6 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools initialIsOpen={false} />
           <RouterProvider router={router} />
         </QueryClientProvider>
       </ThemeProvider>

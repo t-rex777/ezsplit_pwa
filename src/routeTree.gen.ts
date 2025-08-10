@@ -12,17 +12,25 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as fullscreenFullscreenRouteImport } from './routes/(fullscreen)/_fullscreen'
 import { Route as authAuthRouteImport } from './routes/(auth)/_auth'
 import { Route as appAppRouteImport } from './routes/(app)/_app'
 import { Route as authAuthLoginRouteImport } from './routes/(auth)/_auth.login'
 import { Route as appAppSettingsRouteImport } from './routes/(app)/_app.settings'
 import { Route as appAppHomeRouteImport } from './routes/(app)/_app.home'
-import { Route as appAppGroupsRouteImport } from './routes/(app)/_app.groups'
-import { Route as appAppExpensesRouteImport } from './routes/(app)/_app.expenses'
+import { Route as fullscreenFullscreenGroupsNewRouteImport } from './routes/(fullscreen)/_fullscreen.groups.new'
+import { Route as appAppGroupsListRouteImport } from './routes/(app)/_app.groups.list'
+import { Route as appAppExpensesNewRouteImport } from './routes/(app)/_app.expenses.new'
+import { Route as appAppExpensesListRouteImport } from './routes/(app)/_app.expenses.list'
 
+const fullscreenRouteImport = createFileRoute('/(fullscreen)')()
 const authRouteImport = createFileRoute('/(auth)')()
 const appRouteImport = createFileRoute('/(app)')()
 
+const fullscreenRoute = fullscreenRouteImport.update({
+  id: '/(fullscreen)',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authRoute = authRouteImport.update({
   id: '/(auth)',
   getParentRoute: () => rootRouteImport,
@@ -35,6 +43,10 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const fullscreenFullscreenRoute = fullscreenFullscreenRouteImport.update({
+  id: '/_fullscreen',
+  getParentRoute: () => fullscreenRoute,
 } as any)
 const authAuthRoute = authAuthRouteImport.update({
   id: '/_auth',
@@ -59,32 +71,47 @@ const appAppHomeRoute = appAppHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => appAppRoute,
 } as any)
-const appAppGroupsRoute = appAppGroupsRouteImport.update({
-  id: '/groups',
-  path: '/groups',
+const fullscreenFullscreenGroupsNewRoute =
+  fullscreenFullscreenGroupsNewRouteImport.update({
+    id: '/groups/new',
+    path: '/groups/new',
+    getParentRoute: () => fullscreenFullscreenRoute,
+  } as any)
+const appAppGroupsListRoute = appAppGroupsListRouteImport.update({
+  id: '/groups/list',
+  path: '/groups/list',
   getParentRoute: () => appAppRoute,
 } as any)
-const appAppExpensesRoute = appAppExpensesRouteImport.update({
-  id: '/expenses',
-  path: '/expenses',
+const appAppExpensesNewRoute = appAppExpensesNewRouteImport.update({
+  id: '/expenses/new',
+  path: '/expenses/new',
+  getParentRoute: () => appAppRoute,
+} as any)
+const appAppExpensesListRoute = appAppExpensesListRouteImport.update({
+  id: '/expenses/list',
+  path: '/expenses/list',
   getParentRoute: () => appAppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof authAuthRouteWithChildren
-  '/expenses': typeof appAppExpensesRoute
-  '/groups': typeof appAppGroupsRoute
+  '/': typeof fullscreenFullscreenRouteWithChildren
   '/home': typeof appAppHomeRoute
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
+  '/expenses/list': typeof appAppExpensesListRoute
+  '/expenses/new': typeof appAppExpensesNewRoute
+  '/groups/list': typeof appAppGroupsListRoute
+  '/groups/new': typeof fullscreenFullscreenGroupsNewRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof authAuthRouteWithChildren
-  '/expenses': typeof appAppExpensesRoute
-  '/groups': typeof appAppGroupsRoute
+  '/': typeof fullscreenFullscreenRouteWithChildren
   '/home': typeof appAppHomeRoute
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
+  '/expenses/list': typeof appAppExpensesListRoute
+  '/expenses/new': typeof appAppExpensesNewRoute
+  '/groups/list': typeof appAppGroupsListRoute
+  '/groups/new': typeof fullscreenFullscreenGroupsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,17 +120,37 @@ export interface FileRoutesById {
   '/(app)/_app': typeof appAppRouteWithChildren
   '/(auth)': typeof authRouteWithChildren
   '/(auth)/_auth': typeof authAuthRouteWithChildren
-  '/(app)/_app/expenses': typeof appAppExpensesRoute
-  '/(app)/_app/groups': typeof appAppGroupsRoute
+  '/(fullscreen)': typeof fullscreenRouteWithChildren
+  '/(fullscreen)/_fullscreen': typeof fullscreenFullscreenRouteWithChildren
   '/(app)/_app/home': typeof appAppHomeRoute
   '/(app)/_app/settings': typeof appAppSettingsRoute
   '/(auth)/_auth/login': typeof authAuthLoginRoute
+  '/(app)/_app/expenses/list': typeof appAppExpensesListRoute
+  '/(app)/_app/expenses/new': typeof appAppExpensesNewRoute
+  '/(app)/_app/groups/list': typeof appAppGroupsListRoute
+  '/(fullscreen)/_fullscreen/groups/new': typeof fullscreenFullscreenGroupsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expenses' | '/groups' | '/home' | '/settings' | '/login'
+  fullPaths:
+    | '/'
+    | '/home'
+    | '/settings'
+    | '/login'
+    | '/expenses/list'
+    | '/expenses/new'
+    | '/groups/list'
+    | '/groups/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/expenses' | '/groups' | '/home' | '/settings' | '/login'
+  to:
+    | '/'
+    | '/home'
+    | '/settings'
+    | '/login'
+    | '/expenses/list'
+    | '/expenses/new'
+    | '/groups/list'
+    | '/groups/new'
   id:
     | '__root__'
     | '/'
@@ -111,21 +158,33 @@ export interface FileRouteTypes {
     | '/(app)/_app'
     | '/(auth)'
     | '/(auth)/_auth'
-    | '/(app)/_app/expenses'
-    | '/(app)/_app/groups'
+    | '/(fullscreen)'
+    | '/(fullscreen)/_fullscreen'
     | '/(app)/_app/home'
     | '/(app)/_app/settings'
     | '/(auth)/_auth/login'
+    | '/(app)/_app/expenses/list'
+    | '/(app)/_app/expenses/new'
+    | '/(app)/_app/groups/list'
+    | '/(fullscreen)/_fullscreen/groups/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRoute: typeof appRouteWithChildren
   authRoute: typeof authRouteWithChildren
+  fullscreenRoute: typeof fullscreenRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/(fullscreen)': {
+      id: '/(fullscreen)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof fullscreenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth)': {
       id: '/(auth)'
       path: '/'
@@ -146,6 +205,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(fullscreen)/_fullscreen': {
+      id: '/(fullscreen)/_fullscreen'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof fullscreenFullscreenRouteImport
+      parentRoute: typeof fullscreenRoute
     }
     '/(auth)/_auth': {
       id: '/(auth)/_auth'
@@ -182,35 +248,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appAppHomeRouteImport
       parentRoute: typeof appAppRoute
     }
-    '/(app)/_app/groups': {
-      id: '/(app)/_app/groups'
-      path: '/groups'
-      fullPath: '/groups'
-      preLoaderRoute: typeof appAppGroupsRouteImport
+    '/(fullscreen)/_fullscreen/groups/new': {
+      id: '/(fullscreen)/_fullscreen/groups/new'
+      path: '/groups/new'
+      fullPath: '/groups/new'
+      preLoaderRoute: typeof fullscreenFullscreenGroupsNewRouteImport
+      parentRoute: typeof fullscreenFullscreenRoute
+    }
+    '/(app)/_app/groups/list': {
+      id: '/(app)/_app/groups/list'
+      path: '/groups/list'
+      fullPath: '/groups/list'
+      preLoaderRoute: typeof appAppGroupsListRouteImport
       parentRoute: typeof appAppRoute
     }
-    '/(app)/_app/expenses': {
-      id: '/(app)/_app/expenses'
-      path: '/expenses'
-      fullPath: '/expenses'
-      preLoaderRoute: typeof appAppExpensesRouteImport
+    '/(app)/_app/expenses/new': {
+      id: '/(app)/_app/expenses/new'
+      path: '/expenses/new'
+      fullPath: '/expenses/new'
+      preLoaderRoute: typeof appAppExpensesNewRouteImport
+      parentRoute: typeof appAppRoute
+    }
+    '/(app)/_app/expenses/list': {
+      id: '/(app)/_app/expenses/list'
+      path: '/expenses/list'
+      fullPath: '/expenses/list'
+      preLoaderRoute: typeof appAppExpensesListRouteImport
       parentRoute: typeof appAppRoute
     }
   }
 }
 
 interface appAppRouteChildren {
-  appAppExpensesRoute: typeof appAppExpensesRoute
-  appAppGroupsRoute: typeof appAppGroupsRoute
   appAppHomeRoute: typeof appAppHomeRoute
   appAppSettingsRoute: typeof appAppSettingsRoute
+  appAppExpensesListRoute: typeof appAppExpensesListRoute
+  appAppExpensesNewRoute: typeof appAppExpensesNewRoute
+  appAppGroupsListRoute: typeof appAppGroupsListRoute
 }
 
 const appAppRouteChildren: appAppRouteChildren = {
-  appAppExpensesRoute: appAppExpensesRoute,
-  appAppGroupsRoute: appAppGroupsRoute,
   appAppHomeRoute: appAppHomeRoute,
   appAppSettingsRoute: appAppSettingsRoute,
+  appAppExpensesListRoute: appAppExpensesListRoute,
+  appAppExpensesNewRoute: appAppExpensesNewRoute,
+  appAppGroupsListRoute: appAppGroupsListRoute,
 }
 
 const appAppRouteWithChildren =
@@ -248,10 +330,34 @@ const authRouteChildren: authRouteChildren = {
 
 const authRouteWithChildren = authRoute._addFileChildren(authRouteChildren)
 
+interface fullscreenFullscreenRouteChildren {
+  fullscreenFullscreenGroupsNewRoute: typeof fullscreenFullscreenGroupsNewRoute
+}
+
+const fullscreenFullscreenRouteChildren: fullscreenFullscreenRouteChildren = {
+  fullscreenFullscreenGroupsNewRoute: fullscreenFullscreenGroupsNewRoute,
+}
+
+const fullscreenFullscreenRouteWithChildren =
+  fullscreenFullscreenRoute._addFileChildren(fullscreenFullscreenRouteChildren)
+
+interface fullscreenRouteChildren {
+  fullscreenFullscreenRoute: typeof fullscreenFullscreenRouteWithChildren
+}
+
+const fullscreenRouteChildren: fullscreenRouteChildren = {
+  fullscreenFullscreenRoute: fullscreenFullscreenRouteWithChildren,
+}
+
+const fullscreenRouteWithChildren = fullscreenRoute._addFileChildren(
+  fullscreenRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRoute: appRouteWithChildren,
   authRoute: authRouteWithChildren,
+  fullscreenRoute: fullscreenRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
