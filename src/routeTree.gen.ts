@@ -17,6 +17,7 @@ import { Route as appAppRouteImport } from './routes/(app)/_app'
 import { Route as authAuthLoginRouteImport } from './routes/(auth)/_auth.login'
 import { Route as appAppSettingsRouteImport } from './routes/(app)/_app.settings'
 import { Route as appAppHomeRouteImport } from './routes/(app)/_app.home'
+import { Route as appAppGroupsRouteImport } from './routes/(app)/_app.groups'
 import { Route as appAppExpensesRouteImport } from './routes/(app)/_app.expenses'
 
 const authRouteImport = createFileRoute('/(auth)')()
@@ -58,6 +59,11 @@ const appAppHomeRoute = appAppHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => appAppRoute,
 } as any)
+const appAppGroupsRoute = appAppGroupsRouteImport.update({
+  id: '/groups',
+  path: '/groups',
+  getParentRoute: () => appAppRoute,
+} as any)
 const appAppExpensesRoute = appAppExpensesRouteImport.update({
   id: '/expenses',
   path: '/expenses',
@@ -67,6 +73,7 @@ const appAppExpensesRoute = appAppExpensesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof authAuthRouteWithChildren
   '/expenses': typeof appAppExpensesRoute
+  '/groups': typeof appAppGroupsRoute
   '/home': typeof appAppHomeRoute
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof authAuthRouteWithChildren
   '/expenses': typeof appAppExpensesRoute
+  '/groups': typeof appAppGroupsRoute
   '/home': typeof appAppHomeRoute
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
@@ -86,15 +94,16 @@ export interface FileRoutesById {
   '/(auth)': typeof authRouteWithChildren
   '/(auth)/_auth': typeof authAuthRouteWithChildren
   '/(app)/_app/expenses': typeof appAppExpensesRoute
+  '/(app)/_app/groups': typeof appAppGroupsRoute
   '/(app)/_app/home': typeof appAppHomeRoute
   '/(app)/_app/settings': typeof appAppSettingsRoute
   '/(auth)/_auth/login': typeof authAuthLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expenses' | '/home' | '/settings' | '/login'
+  fullPaths: '/' | '/expenses' | '/groups' | '/home' | '/settings' | '/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/expenses' | '/home' | '/settings' | '/login'
+  to: '/' | '/expenses' | '/groups' | '/home' | '/settings' | '/login'
   id:
     | '__root__'
     | '/'
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
     | '/(auth)'
     | '/(auth)/_auth'
     | '/(app)/_app/expenses'
+    | '/(app)/_app/groups'
     | '/(app)/_app/home'
     | '/(app)/_app/settings'
     | '/(auth)/_auth/login'
@@ -172,6 +182,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appAppHomeRouteImport
       parentRoute: typeof appAppRoute
     }
+    '/(app)/_app/groups': {
+      id: '/(app)/_app/groups'
+      path: '/groups'
+      fullPath: '/groups'
+      preLoaderRoute: typeof appAppGroupsRouteImport
+      parentRoute: typeof appAppRoute
+    }
     '/(app)/_app/expenses': {
       id: '/(app)/_app/expenses'
       path: '/expenses'
@@ -184,12 +201,14 @@ declare module '@tanstack/react-router' {
 
 interface appAppRouteChildren {
   appAppExpensesRoute: typeof appAppExpensesRoute
+  appAppGroupsRoute: typeof appAppGroupsRoute
   appAppHomeRoute: typeof appAppHomeRoute
   appAppSettingsRoute: typeof appAppSettingsRoute
 }
 
 const appAppRouteChildren: appAppRouteChildren = {
   appAppExpensesRoute: appAppExpensesRoute,
+  appAppGroupsRoute: appAppGroupsRoute,
   appAppHomeRoute: appAppHomeRoute,
   appAppSettingsRoute: appAppSettingsRoute,
 }

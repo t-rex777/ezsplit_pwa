@@ -1,6 +1,6 @@
+import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { useTheme } from "@/lib/theme";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -31,12 +31,14 @@ function SettingsPage() {
           label: "Profile",
           description: "Manage your personal information",
           href: "/profile",
+          action: null,
         },
         {
           icon: Bell,
           label: "Notifications",
           description: "Configure your notification preferences",
           href: "/notifications",
+          action: null,
         },
       ],
     },
@@ -47,13 +49,8 @@ function SettingsPage() {
           icon: theme === "dark" ? Moon : Sun,
           label: "Dark Mode",
           description: "Toggle between light and dark themes",
-          action: (
-            <Switch
-              checked={theme === "dark"}
-              onCheckedChange={toggleTheme}
-              className="ml-auto"
-            />
-          ),
+          href: null,
+          action: <AnimatedThemeToggler theme={theme} setTheme={toggleTheme} />,
         },
       ],
     },
@@ -65,6 +62,7 @@ function SettingsPage() {
           label: "Privacy Settings",
           description: "Control your privacy and data sharing",
           href: "/privacy",
+          action: null,
         },
       ],
     },
