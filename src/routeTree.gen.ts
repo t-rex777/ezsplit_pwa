@@ -15,7 +15,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as authAuthRouteImport } from './routes/(auth)/_auth'
 import { Route as appAppRouteImport } from './routes/(app)/_app'
 import { Route as authAuthLoginRouteImport } from './routes/(auth)/_auth.login'
+import { Route as appAppSettingsRouteImport } from './routes/(app)/_app.settings'
 import { Route as appAppHomeRouteImport } from './routes/(app)/_app.home'
+import { Route as appAppExpensesRouteImport } from './routes/(app)/_app.expenses'
 
 const authRouteImport = createFileRoute('/(auth)')()
 const appRouteImport = createFileRoute('/(app)')()
@@ -46,20 +48,34 @@ const authAuthLoginRoute = authAuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => authAuthRoute,
 } as any)
+const appAppSettingsRoute = appAppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => appAppRoute,
+} as any)
 const appAppHomeRoute = appAppHomeRouteImport.update({
   id: '/home',
   path: '/home',
   getParentRoute: () => appAppRoute,
 } as any)
+const appAppExpensesRoute = appAppExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
+  getParentRoute: () => appAppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof authAuthRouteWithChildren
+  '/expenses': typeof appAppExpensesRoute
   '/home': typeof appAppHomeRoute
+  '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof authAuthRouteWithChildren
+  '/expenses': typeof appAppExpensesRoute
   '/home': typeof appAppHomeRoute
+  '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
 }
 export interface FileRoutesById {
@@ -69,14 +85,16 @@ export interface FileRoutesById {
   '/(app)/_app': typeof appAppRouteWithChildren
   '/(auth)': typeof authRouteWithChildren
   '/(auth)/_auth': typeof authAuthRouteWithChildren
+  '/(app)/_app/expenses': typeof appAppExpensesRoute
   '/(app)/_app/home': typeof appAppHomeRoute
+  '/(app)/_app/settings': typeof appAppSettingsRoute
   '/(auth)/_auth/login': typeof authAuthLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/login'
+  fullPaths: '/' | '/expenses' | '/home' | '/settings' | '/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/login'
+  to: '/' | '/expenses' | '/home' | '/settings' | '/login'
   id:
     | '__root__'
     | '/'
@@ -84,7 +102,9 @@ export interface FileRouteTypes {
     | '/(app)/_app'
     | '/(auth)'
     | '/(auth)/_auth'
+    | '/(app)/_app/expenses'
     | '/(app)/_app/home'
+    | '/(app)/_app/settings'
     | '/(auth)/_auth/login'
   fileRoutesById: FileRoutesById
 }
@@ -138,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authAuthLoginRouteImport
       parentRoute: typeof authAuthRoute
     }
+    '/(app)/_app/settings': {
+      id: '/(app)/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof appAppSettingsRouteImport
+      parentRoute: typeof appAppRoute
+    }
     '/(app)/_app/home': {
       id: '/(app)/_app/home'
       path: '/home'
@@ -145,15 +172,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appAppHomeRouteImport
       parentRoute: typeof appAppRoute
     }
+    '/(app)/_app/expenses': {
+      id: '/(app)/_app/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof appAppExpensesRouteImport
+      parentRoute: typeof appAppRoute
+    }
   }
 }
 
 interface appAppRouteChildren {
+  appAppExpensesRoute: typeof appAppExpensesRoute
   appAppHomeRoute: typeof appAppHomeRoute
+  appAppSettingsRoute: typeof appAppSettingsRoute
 }
 
 const appAppRouteChildren: appAppRouteChildren = {
+  appAppExpensesRoute: appAppExpensesRoute,
   appAppHomeRoute: appAppHomeRoute,
+  appAppSettingsRoute: appAppSettingsRoute,
 }
 
 const appAppRouteWithChildren =

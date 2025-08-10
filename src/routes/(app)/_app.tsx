@@ -1,3 +1,4 @@
+import { BottomNavigation } from "@/components/BottomNavigation";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { Suspense } from "react";
 
@@ -14,8 +15,13 @@ export const Route = createFileRoute("/(app)/_app")({
 
 function RouteComponent() {
   return (
-    <Suspense>
-      <Outlet />
-    </Suspense>
+    <div className="min-h-screen bg-background">
+      <Suspense>
+        <main className="relative">
+          <Outlet />
+        </main>
+        <BottomNavigation />
+      </Suspense>
+    </div>
   );
 }

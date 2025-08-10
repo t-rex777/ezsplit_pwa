@@ -1,40 +1,62 @@
 import { apiCall } from "../client";
-import type { ApiResponse, PaginatedResponse } from "../index";
+import type { ApiResponse, PaginatedResponse, TResource } from "../index";
 
 // Expense-related types
-export interface Expense {
-  id: string;
-  title: string;
-  description?: string;
-  amount: number;
-  currency: string;
-  paidBy: string; // user ID
-  splitType: "equal" | "exact" | "percentage";
-  participants: ExpenseParticipant[];
-  groupId?: string;
-  category?: string;
-  date: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export interface Expense
+  extends TResource<{
+    id: string;
+    name: string;
+    amount: number;
+    split_type: "equal" | "exact" | "percentage";
+    currency: string;
+    expense_date: string;
+    settled: boolean;
+    created_at: string;
+    updated_at: string;
+    payer: {
+      id: string;
+      name: string;
+      email: string;
+    };
+    group: {
+      id: string;
+      name: string;
+      description?: string;
+    };
+    category: {
+      id: string;
+      name: string;
+      color?: string;
+    };
+    expenses_users: ExpenseParticipant[];
+  }> {}
 
 export interface ExpenseParticipant {
-  userId: string;
-  amount: number;
   paid: boolean;
+  amount: number;
+  expense_id: string;
+  user_id: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
 }
 
 export interface CreateExpenseRequest {
-  title: string;
-  description?: string;
+  name: string;
   amount: number;
   currency?: string;
-  paidBy: string;
-  splitType: "equal" | "exact" | "percentage";
-  participants: Omit<ExpenseParticipant, "paid">[];
-  groupId?: string;
-  category?: string;
-  date?: string;
+  payer_id: string;
+  split_type: "equal" | "exact" | "percentage";
+  group_id: string;
+  category_id: string;
+  expense_date?: string;
+  settled?: boolean;
+  expenses_users_attributes: Array<{
+    user_id: string;
+    amount: number;
+  }>;
 }
 
 export interface UpdateExpenseRequest extends Partial<CreateExpenseRequest> {
@@ -47,14 +69,15 @@ export const expenseService = {
   getExpenses: async (params?: {
     page?: number;
     limit?: number;
-    groupId?: string;
-    userId?: string;
+    group_id?: string;
+    user_id?: string;
   }): Promise<PaginatedResponse<Expense>> => {
     const response = await apiCall<PaginatedResponse<Expense>>({
       method: "GET",
       url: "/expenses",
       params,
     });
+
     return response;
   },
 
@@ -105,7 +128,7 @@ export const expenseService = {
     const response = await apiCall<ApiResponse<Expense>>({
       method: "POST",
       url: `/expenses/${expenseId}/pay`,
-      data: { userId },
+      data: { user_id: userId },
     });
     return response.data;
   },
@@ -127,7 +150,7 @@ export const expenseService = {
     >({
       method: "GET",
       url: "/expenses/balance",
-      params: userId ? { userId } : undefined,
+      params: userId ? { user_id: userId } : undefined,
     });
     return response.data;
   },

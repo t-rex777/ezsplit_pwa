@@ -12,6 +12,13 @@
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
     <title>Create TanStack App - ezsplit_pwa</title>
+    <script>
+      // Prevent flash of unstyled content by setting theme before render
+      (function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.classList.add(theme);
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>

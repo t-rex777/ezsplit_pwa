@@ -2,6 +2,17 @@
 export { apiCall, default as apiClient } from "./client";
 
 // Common API types
+
+export interface TResource<T = unknown> {
+  id: string;
+  type: string;
+  attributes: T;
+  relationships: Record<
+    string,
+    ResourceRelationship[] | ResourceRelationships[]
+  >;
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data: T;
@@ -14,12 +25,28 @@ export interface ApiError {
   errors?: Record<string, string[]>;
 }
 
-export interface PaginatedResponse<T> {
+export interface ResourceRelationship {
+  data: {
+    id: string;
+    type: string;
+  };
+}
+
+export interface ResourceRelationships {
+  data: {
+    id: string;
+    type: string;
+  }[];
+}
+
+export interface PaginatedResponse<T extends TResource> {
   data: T[];
-  pagination: {
-    page: number;
-    limit: number;
+  included: TResource[];
+  meta: {
+    current_page: number;
+    next_page: number;
+    prev_page: number;
     total: number;
-    totalPages: number;
+    total_pages: number;
   };
 }
