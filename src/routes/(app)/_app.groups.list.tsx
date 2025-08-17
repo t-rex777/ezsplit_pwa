@@ -62,29 +62,28 @@ function GroupsPage() {
               </Button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               {groups.map((group) => (
-                <Card
-                  key={group.id}
-                  className="p-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Users className="h-5 w-5 text-primary" />
+                <Link to="/groups/$id" params={{ id: group.id }} key={group.id}>
+                  <Card className="p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Users className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-foreground">
+                            {group.attributes.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            3 members • $45.50 pending
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-medium text-foreground">
-                          {group.attributes.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          3 members • $45.50 pending
-                        </p>
-                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                </Card>
+                  </Card>
+                </Link>
               ))}
             </div>
           )}

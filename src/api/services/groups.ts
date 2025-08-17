@@ -1,3 +1,4 @@
+import type { TResource } from "@/api";
 import { apiCall } from "../client";
 
 // Group-related types
@@ -52,12 +53,14 @@ export const groupsService = {
   },
 
   // Get single group by ID
-  getGroup: async (id: string): Promise<Group> => {
-    const response = await apiCall<{ data: Group }>({
+  getGroup: async (
+    id: string,
+  ): Promise<{ data: Group; included: TResource[] }> => {
+    const response = await apiCall<{ data: Group; included: TResource[] }>({
       method: "GET",
       url: `/groups/${id}`,
     });
-    return response.data;
+    return response;
   },
 
   // Create new group

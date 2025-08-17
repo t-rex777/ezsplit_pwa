@@ -21,12 +21,27 @@ export interface RegisterRequest {
   password: string;
 }
 
-export interface User {
+export interface UserResource {
   id: string;
-  email: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
+  type: "user";
+  attributes: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email_address: string;
+    phone: string;
+    avatar_url: string;
+    date_of_birth: string;
+    full_name: string;
+  };
+  relationships: {
+    groups: {
+      data: {
+        id: string;
+        type: "group";
+      }[];
+    };
+  };
 }
 
 // Auth service methods
@@ -45,8 +60,8 @@ export const authService = {
   },
 
   // Register new user
-  register: async (userData: RegisterRequest): Promise<User> => {
-    const response = await apiCall<ApiResponse<User>>({
+  register: async (userData: RegisterRequest): Promise<UserResource> => {
+    const response = await apiCall<ApiResponse<UserResource>>({
       method: "POST",
       url: "/auth/register",
       data: userData,
@@ -55,8 +70,8 @@ export const authService = {
   },
 
   // Get current user profile
-  getProfile: async (): Promise<User> => {
-    const response = await apiCall<ApiResponse<User>>({
+  getProfile: async (): Promise<UserResource> => {
+    const response = await apiCall<ApiResponse<UserResource>>({
       method: "GET",
       url: "/session",
     });

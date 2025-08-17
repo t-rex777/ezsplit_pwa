@@ -24,7 +24,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   },
   component: () => {
     return (
-      <Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
         <Outlet />
         <Toaster />
         {/* <TanStackRouterDevtools /> */}

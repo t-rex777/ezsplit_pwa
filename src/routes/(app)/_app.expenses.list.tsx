@@ -4,7 +4,7 @@ import { ExpenseListEmpty } from "@/components/expense/expenseListEmpty";
 import { ExpenseListLoading } from "@/components/expense/expenseListLoading";
 import { Button } from "@/components/ui/button";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, Receipt } from "lucide-react";
 import { Suspense } from "react";
 
@@ -45,7 +45,14 @@ function ExpensesPage() {
           ) : (
             <div className="space-y-3">
               {expenses.map((expense) => (
+                // <Link
+                //   to="/groups/$id"
+                //   params={{ id: expense.id }}
+                //   key={expense.id}
+                //   className="cursor-pointer"
+                // >
                 <ExpenseCard key={expense.id} expense={expense} />
+                // </Link>
               ))}
             </div>
           )}
