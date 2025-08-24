@@ -1,4 +1,6 @@
-import type { JSX } from "react";
+import { categoryService } from "@/api/services/categories";
+import { groupsService } from "@/api/services/groups";
+import type { UserResource } from "@/api/services/users";
 import { FieldInfo } from "@/components/formFieldInfo";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,13 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@radix-ui/react-label";
-import { useForm, useStore } from "@tanstack/react-form";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { DollarSign, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
-import type { UserResource } from "@/api/services/auth";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -24,10 +20,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CURRENCIES } from "@/constants/currencies";
-import { categoryService } from "@/api/services/categories";
-import { groupsService } from "@/api/services/groups";
+import { Label } from "@radix-ui/react-label";
+import { useForm, useStore } from "@tanstack/react-form";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { DollarSign, Wallet } from "lucide-react";
+import type { JSX } from "react";
+import { useState } from "react";
 
 interface EditExpenseFormProps {
   defaultValues?: Partial<EditExpenseFormData>;
@@ -108,30 +108,45 @@ const EditExpenseForm = ({
     defaultValues: defaultValues ?? {
       name: "",
       amount: 0,
-      currency: "USD", // Default currency
-      payer_id: session.id, // Default payer to current user
-      split_type: "equal",
+      currency: "INR",
+      payer_id: session.id,
+      split_type: "equal" as const,
       group_id: "",
       category_id: "",
-      expense_date: new Date().toISOString().split("T")[0], // Default to current date
+      expense_date: new Date().toISOString().split("T")[0],
       settled: false,
       distribution: [],
     },
     onSubmit: async ({ value }) => {
-      // const expensesUsersAttributes = value.expenses_users_attributes.map(
-      //   (attr) => ({
-      //     user_id: attr.user_id,
-      //     amount: attr.amount,
-      //     paid: attr.paid,
-      //   }),
-      // );
+      if (
+        !value.amount ||
+        !value.name ||
+        !value.currency ||
+        !value.payer_id ||
+        !value.group_id ||
+        !value.category_id
+      ) {
+        return; // Form validation will handle this
+      }
+
+      const validatedAmount = value.amount; // TypeScript now knows this is defined
+
       await onSubmit({
-        ...value,
+        name: value.name,
+        amount: validatedAmount,
+        currency: value.currency,
+        payer_id: value.payer_id,
+        split_type: value.split_type || "equal",
+        group_id: value.group_id,
+        category_id: value.category_id,
+        expense_date:
+          value.expense_date || new Date().toISOString().split("T")[0],
+        settled: value.settled || false,
         distribution: (
           groups.find((group) => group.id === selectedGroupId)?.members || []
         ).map((member) => ({
           user_id: member.id,
-          amount: value.amount / selectedGroupMembers.length,
+          amount: validatedAmount / selectedGroupMembers.length,
         })),
       });
     },

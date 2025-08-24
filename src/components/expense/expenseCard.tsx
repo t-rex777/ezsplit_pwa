@@ -20,7 +20,14 @@ const ExpenseCard = memo(({ expense }: IExpenseCardProps): JSX.Element => {
             {expense.attributes.name}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {new Date(expense.attributes.created_at).toLocaleDateString()}
+            {new Date(expense.attributes.expense_date).toLocaleDateString(
+              undefined,
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              },
+            )}
           </p>
         </div>
         <div className="text-right">

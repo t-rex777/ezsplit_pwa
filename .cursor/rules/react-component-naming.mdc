@@ -1,0 +1,57 @@
+---
+alwaysApply: true
+description: "React component naming convention rule"
+---
+
+# React Component Naming Convention
+
+All React components should follow this naming pattern:
+
+- **Format**: `verbResourceName.tsx`
+- **Case**: camelCase
+- **Structure**: Verb first, then resource name
+
+## Examples ✅
+
+### Pages
+
+- `editExpensePage.tsx`
+- `createGroupPage.tsx`
+- `viewUserProfilePage.tsx`
+- `listExpensesPage.tsx`
+
+### Components
+
+- `editExpenseForm.tsx`
+- `createGroupForm.tsx`
+- `expenseCard.tsx`
+- `userAvatar.tsx`
+- `groupList.tsx`
+
+### Forms
+
+- `editExpenseForm.tsx`
+- `createGroupForm.tsx`
+- `updateUserForm.tsx`
+
+## Examples ❌
+
+- `ExpenseEditPage.tsx` (PascalCase, wrong order)
+- `expense-edit-page.tsx` (kebab-case)
+- `expense_edit_page.tsx` (snake_case)
+- `EditExpensePage.tsx` (PascalCase, wrong order)
+
+## Common Verbs
+
+- `create` - for new item forms/pages
+- `edit` - for editing existing items
+- `view` - for read-only displays
+- `list` - for collections/arrays
+- `show` - for detailed views
+- `delete` - for removal operations
+- `update` - for modification operations
+
+## File Extensions
+
+- Use `.tsx` for React components with JSX
+- Use `.ts` for utility files, types, and non-JSX components

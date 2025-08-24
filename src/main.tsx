@@ -10,25 +10,17 @@ import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ShowAppLoading } from "./components/showAppLoading.tsx";
 import { ThemeProvider } from "./lib/theme";
 import reportWebVitals from "./reportWebVitals.ts";
 import "./styles.css";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 0,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  defaultPendingComponent: () => <div>Loading...</div>,
+  defaultPendingComponent: ShowAppLoading,
   context: { queryClient },
   defaultErrorComponent: ErrorComponent,
   defaultNotFoundComponent(): JSX.Element {
