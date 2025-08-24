@@ -20,8 +20,8 @@ import { Route as appAppSettingsRouteImport } from './routes/(app)/_app.settings
 import { Route as appAppHomeRouteImport } from './routes/(app)/_app.home'
 import { Route as fullscreenFullscreenGroupsNewRouteImport } from './routes/(fullscreen)/_fullscreen.groups.new'
 import { Route as fullscreenFullscreenGroupsIdRouteImport } from './routes/(fullscreen)/_fullscreen.groups.$id'
+import { Route as fullscreenFullscreenExpensesNewRouteImport } from './routes/(fullscreen)/_fullscreen.expenses.new'
 import { Route as appAppGroupsListRouteImport } from './routes/(app)/_app.groups.list'
-import { Route as appAppExpensesNewRouteImport } from './routes/(app)/_app.expenses.new'
 import { Route as appAppExpensesListRouteImport } from './routes/(app)/_app.expenses.list'
 
 const fullscreenRouteImport = createFileRoute('/(fullscreen)')()
@@ -84,14 +84,15 @@ const fullscreenFullscreenGroupsIdRoute =
     path: '/groups/$id',
     getParentRoute: () => fullscreenFullscreenRoute,
   } as any)
+const fullscreenFullscreenExpensesNewRoute =
+  fullscreenFullscreenExpensesNewRouteImport.update({
+    id: '/expenses/new',
+    path: '/expenses/new',
+    getParentRoute: () => fullscreenFullscreenRoute,
+  } as any)
 const appAppGroupsListRoute = appAppGroupsListRouteImport.update({
   id: '/groups/list',
   path: '/groups/list',
-  getParentRoute: () => appAppRoute,
-} as any)
-const appAppExpensesNewRoute = appAppExpensesNewRouteImport.update({
-  id: '/expenses/new',
-  path: '/expenses/new',
   getParentRoute: () => appAppRoute,
 } as any)
 const appAppExpensesListRoute = appAppExpensesListRouteImport.update({
@@ -106,8 +107,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
   '/expenses/list': typeof appAppExpensesListRoute
-  '/expenses/new': typeof appAppExpensesNewRoute
   '/groups/list': typeof appAppGroupsListRoute
+  '/expenses/new': typeof fullscreenFullscreenExpensesNewRoute
   '/groups/$id': typeof fullscreenFullscreenGroupsIdRoute
   '/groups/new': typeof fullscreenFullscreenGroupsNewRoute
 }
@@ -117,8 +118,8 @@ export interface FileRoutesByTo {
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
   '/expenses/list': typeof appAppExpensesListRoute
-  '/expenses/new': typeof appAppExpensesNewRoute
   '/groups/list': typeof appAppGroupsListRoute
+  '/expenses/new': typeof fullscreenFullscreenExpensesNewRoute
   '/groups/$id': typeof fullscreenFullscreenGroupsIdRoute
   '/groups/new': typeof fullscreenFullscreenGroupsNewRoute
 }
@@ -135,8 +136,8 @@ export interface FileRoutesById {
   '/(app)/_app/settings': typeof appAppSettingsRoute
   '/(auth)/_auth/login': typeof authAuthLoginRoute
   '/(app)/_app/expenses/list': typeof appAppExpensesListRoute
-  '/(app)/_app/expenses/new': typeof appAppExpensesNewRoute
   '/(app)/_app/groups/list': typeof appAppGroupsListRoute
+  '/(fullscreen)/_fullscreen/expenses/new': typeof fullscreenFullscreenExpensesNewRoute
   '/(fullscreen)/_fullscreen/groups/$id': typeof fullscreenFullscreenGroupsIdRoute
   '/(fullscreen)/_fullscreen/groups/new': typeof fullscreenFullscreenGroupsNewRoute
 }
@@ -148,8 +149,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/login'
     | '/expenses/list'
-    | '/expenses/new'
     | '/groups/list'
+    | '/expenses/new'
     | '/groups/$id'
     | '/groups/new'
   fileRoutesByTo: FileRoutesByTo
@@ -159,8 +160,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/login'
     | '/expenses/list'
-    | '/expenses/new'
     | '/groups/list'
+    | '/expenses/new'
     | '/groups/$id'
     | '/groups/new'
   id:
@@ -176,8 +177,8 @@ export interface FileRouteTypes {
     | '/(app)/_app/settings'
     | '/(auth)/_auth/login'
     | '/(app)/_app/expenses/list'
-    | '/(app)/_app/expenses/new'
     | '/(app)/_app/groups/list'
+    | '/(fullscreen)/_fullscreen/expenses/new'
     | '/(fullscreen)/_fullscreen/groups/$id'
     | '/(fullscreen)/_fullscreen/groups/new'
   fileRoutesById: FileRoutesById
@@ -275,18 +276,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof fullscreenFullscreenGroupsIdRouteImport
       parentRoute: typeof fullscreenFullscreenRoute
     }
+    '/(fullscreen)/_fullscreen/expenses/new': {
+      id: '/(fullscreen)/_fullscreen/expenses/new'
+      path: '/expenses/new'
+      fullPath: '/expenses/new'
+      preLoaderRoute: typeof fullscreenFullscreenExpensesNewRouteImport
+      parentRoute: typeof fullscreenFullscreenRoute
+    }
     '/(app)/_app/groups/list': {
       id: '/(app)/_app/groups/list'
       path: '/groups/list'
       fullPath: '/groups/list'
       preLoaderRoute: typeof appAppGroupsListRouteImport
-      parentRoute: typeof appAppRoute
-    }
-    '/(app)/_app/expenses/new': {
-      id: '/(app)/_app/expenses/new'
-      path: '/expenses/new'
-      fullPath: '/expenses/new'
-      preLoaderRoute: typeof appAppExpensesNewRouteImport
       parentRoute: typeof appAppRoute
     }
     '/(app)/_app/expenses/list': {
@@ -303,7 +304,6 @@ interface appAppRouteChildren {
   appAppHomeRoute: typeof appAppHomeRoute
   appAppSettingsRoute: typeof appAppSettingsRoute
   appAppExpensesListRoute: typeof appAppExpensesListRoute
-  appAppExpensesNewRoute: typeof appAppExpensesNewRoute
   appAppGroupsListRoute: typeof appAppGroupsListRoute
 }
 
@@ -311,7 +311,6 @@ const appAppRouteChildren: appAppRouteChildren = {
   appAppHomeRoute: appAppHomeRoute,
   appAppSettingsRoute: appAppSettingsRoute,
   appAppExpensesListRoute: appAppExpensesListRoute,
-  appAppExpensesNewRoute: appAppExpensesNewRoute,
   appAppGroupsListRoute: appAppGroupsListRoute,
 }
 
@@ -351,11 +350,13 @@ const authRouteChildren: authRouteChildren = {
 const authRouteWithChildren = authRoute._addFileChildren(authRouteChildren)
 
 interface fullscreenFullscreenRouteChildren {
+  fullscreenFullscreenExpensesNewRoute: typeof fullscreenFullscreenExpensesNewRoute
   fullscreenFullscreenGroupsIdRoute: typeof fullscreenFullscreenGroupsIdRoute
   fullscreenFullscreenGroupsNewRoute: typeof fullscreenFullscreenGroupsNewRoute
 }
 
 const fullscreenFullscreenRouteChildren: fullscreenFullscreenRouteChildren = {
+  fullscreenFullscreenExpensesNewRoute: fullscreenFullscreenExpensesNewRoute,
   fullscreenFullscreenGroupsIdRoute: fullscreenFullscreenGroupsIdRoute,
   fullscreenFullscreenGroupsNewRoute: fullscreenFullscreenGroupsNewRoute,
 }

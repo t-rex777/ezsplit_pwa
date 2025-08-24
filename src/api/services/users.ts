@@ -4,13 +4,13 @@ import { apiCall } from "../client";
 export interface User {
   id: string;
   attributes: {
+    full_name: string;
     first_name: string;
     last_name: string;
     email_address: string;
     phone: string;
     avatar_url?: string;
     date_of_birth: string;
-    full_name: string;
     created_at: string;
     updated_at: string;
   };

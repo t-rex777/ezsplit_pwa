@@ -4,7 +4,6 @@ import type { ApiResponse, PaginatedResponse, TResource } from "../index";
 // Expense-related types
 export interface Expense
   extends TResource<{
-    id: string;
     name: string;
     amount: number;
     split_type: "equal" | "exact" | "percentage";
@@ -53,7 +52,7 @@ export interface CreateExpenseRequest {
   category_id: string;
   expense_date?: string;
   settled?: boolean;
-  expenses_users_attributes: Array<{
+  distribution: Array<{
     user_id: string;
     amount: number;
   }>;
@@ -97,7 +96,7 @@ export const expenseService = {
     const response = await apiCall<ApiResponse<Expense>>({
       method: "POST",
       url: "/expenses",
-      data: expenseData,
+      data: { expense: expenseData },
     });
     return response.data;
   },
@@ -110,7 +109,7 @@ export const expenseService = {
     const response = await apiCall<ApiResponse<Expense>>({
       method: "PUT",
       url: `/expenses/${id}`,
-      data,
+      data: { expense: data },
     });
     return response.data;
   },

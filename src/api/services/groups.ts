@@ -23,6 +23,7 @@ export interface Group {
 
 export interface GroupsResponse {
   data: Group[];
+  included?: TResource[];
   meta?: {
     pagination?: {
       current: number;
@@ -55,8 +56,8 @@ export const groupsService = {
   // Get single group by ID
   getGroup: async (
     id: string,
-  ): Promise<{ data: Group; included: TResource[] }> => {
-    const response = await apiCall<{ data: Group; included: TResource[] }>({
+  ): Promise<{ data: Group; included?: TResource[] }> => {
+    const response = await apiCall<{ data: Group; included?: TResource[] }>({
       method: "GET",
       url: `/groups/${id}`,
     });

@@ -138,7 +138,7 @@ const EditGroupForm = ({ defaultValues, onSubmit }: EditGroupFormProps) => {
                 {(field) => {
                   return (
                     <>
-                      <Label htmlFor={field.name}>Group Name *</Label>
+                      <Label htmlFor={field.name}>Group Name</Label>
                       <Input
                         id={field.name}
                         name={field.name}

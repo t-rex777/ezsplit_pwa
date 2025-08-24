@@ -77,8 +77,21 @@ apiClient.interceptors.response.use(
 export const apiCall = async <T = unknown>(
   config: AxiosRequestConfig,
 ): Promise<T> => {
-  const response = await apiClient(config);
-  return response.data;
+  try {
+    const response = await apiClient(config);
+    return response.data;
+  } catch (error) {
+    // todo: handle error
+    if (error.response?.status === 404) {
+      console.error("Not Found", error);
+    }
+
+    if (error.response?.status === 500) {
+      console.error("Internal Server Error", error);
+    }
+
+    return error;
+  }
 };
 
 export default apiClient;

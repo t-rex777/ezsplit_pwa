@@ -34,9 +34,12 @@ function ExpensesPage() {
               <Receipt className="h-6 w-6 text-primary" />
               <h1 className="text-2xl font-bold">Expenses</h1>
             </div>
-            <Button size="sm" className="rounded-full h-10 w-10 p-0">
-              <Plus className="h-5 w-5" />
-            </Button>
+
+            <Link to="/expenses/new">
+              <Button size="sm" className="rounded-full h-10 w-10 p-0">
+                <Plus className="h-5 w-5" />
+              </Button>
+            </Link>
           </div>
 
           {/* Expenses List */}

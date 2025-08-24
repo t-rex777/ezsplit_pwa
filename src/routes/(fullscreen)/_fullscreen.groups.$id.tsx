@@ -1,4 +1,3 @@
-import type { UserResource } from "@/api/services/auth";
 import { groupsService, type CreateGroupParams } from "@/api/services/groups";
 import EditGroupForm, {
   type EditGroupFormData,
@@ -6,7 +5,6 @@ import EditGroupForm, {
 import { useToast } from "@/components/ui/use-toast";
 import {
   useMutation,
-  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
@@ -64,7 +62,7 @@ function RouteComponent() {
   };
 
   const userIds = group.relationships?.users?.data.map((user) => user.id) ?? [];
-  const users = included.filter(
+  const users = included?.filter(
     (user) => userIds?.includes(user.id) && user.type === "user",
   );
 
