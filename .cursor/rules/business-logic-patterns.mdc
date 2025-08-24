@@ -1,0 +1,174 @@
+---
+alwaysApply: true
+description: "Business logic patterns and domain-specific rules for expense splitting application"
+---
+
+# Business Logic Patterns - Expense Splitting App
+
+## Domain Models
+
+### Core Entities
+- **User**: Authentication, profile management, group memberships
+- **Group**: Expense sharing groups with members
+- **Expense**: Individual expenses with amounts, categories, and participants
+- **Category**: Expense categorization for reporting
+- **GroupMembership**: User relationships within groups
+
+### Data Relationships
+- Users can belong to multiple groups
+- Expenses belong to groups and have multiple participants
+- Categories are user-specific and can be shared across expenses
+- Group memberships define user roles and permissions
+
+## Expense Management Patterns
+
+### Expense Creation Flow
+```typescript
+// 1. Validate expense data
+// 2. Create expense record
+// 3. Distribute amount among participants
+// 4. Update group balances
+// 5. Send notifications (if applicable)
+```
+
+### Amount Distribution Logic
+- **Equal Split**: Divide total amount equally among participants
+- **Percentage Split**: Distribute based on user-defined percentages
+- **Custom Split**: Allow manual amount allocation per participant
+- **Currency Handling**: Support multiple currencies with conversion
+
+### Balance Calculation
+```typescript
+interface BalanceCalculation {
+  userId: string;
+  totalPaid: number;
+  totalOwed: number;
+  netBalance: number; // positive = owed money, negative = owes money
+}
+```
+
+## Group Management Patterns
+
+### Group Operations
+- **Creation**: Initialize with creator as admin
+- **Invitation**: Send invites via email/link
+- **Membership**: Handle join/leave requests
+- **Permissions**: Admin vs member roles
+- **Deletion**: Handle group dissolution and debt settlement
+
+### Group State Management
+```typescript
+interface GroupState {
+  isActive: boolean;
+  memberCount: number;
+  totalExpenses: number;
+  outstandingBalances: BalanceCalculation[];
+  lastActivity: Date;
+}
+```
+
+## Category Management
+
+### Category Structure
+```typescript
+interface Category {
+  id: string;
+  name: string;
+  color: string;
+  icon?: string;
+  isDefault: boolean;
+  createdBy: string;
+}
+```
+
+### Category Usage
+- **Default Categories**: Food, Transport, Entertainment, etc.
+- **Custom Categories**: User-defined categories
+- **Category Merging**: Handle duplicate categories
+- **Category Deletion**: Prevent deletion if in use
+
+## Data Validation Rules
+
+### Expense Validation
+- Amount must be positive
+- Date cannot be in the future
+- Must have at least one participant
+- Category must exist and be accessible
+- Currency must be supported
+
+### Group Validation
+- Group name must be unique per user
+- Minimum 2 members required
+- Cannot delete group with outstanding balances
+- Admin cannot leave without transferring ownership
+
+### User Validation
+- Email must be unique
+- Password strength requirements
+- Name cannot be empty
+- Profile updates require authentication
+
+## Business Rules
+
+### Debt Settlement
+- Users cannot owe negative amounts (overpayment handling)
+- Balances are calculated per group
+- Settlement suggestions based on optimal debt resolution
+- Support for partial payments
+
+### Privacy and Security
+- Users can only see groups they're members of
+- Expense details visible to group members only
+- Profile information limited to necessary fields
+- Audit trail for financial transactions
+
+### Notification System
+- Expense added to group
+- Balance changes
+- Group invitations
+- Payment reminders
+- Settlement confirmations
+
+## Error Handling
+
+### Business Logic Errors
+- Insufficient funds for settlement
+- Invalid expense distribution
+- Group capacity limits
+- Currency conversion failures
+- Duplicate expense detection
+
+### User Experience
+- Clear error messages
+- Suggested solutions
+- Graceful degradation
+- Offline support where possible
+
+## Performance Considerations
+
+### Data Loading
+- Lazy load group members
+- Paginate expense lists
+- Cache frequently accessed data
+- Optimize balance calculations
+
+### Real-time Updates
+- WebSocket for live balance updates
+- Optimistic UI updates
+- Conflict resolution for concurrent edits
+- Offline-first approach with sync
+
+## Testing Strategy
+
+### Business Logic Tests
+- Expense calculation accuracy
+- Balance computation correctness
+- Group operation validation
+- Category management logic
+- Debt settlement algorithms
+
+### Integration Tests
+- End-to-end expense flows
+- Group lifecycle management
+- User authentication flows
+- Data consistency checks
