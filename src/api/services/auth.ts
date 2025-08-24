@@ -1,5 +1,6 @@
 import { apiCall } from "../client";
 import type { ApiResponse } from "../index";
+import type { UserResource } from "./users";
 
 // Auth-related types
 export interface LoginRequest {
@@ -19,29 +20,6 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
-}
-
-export interface UserResource {
-  id: string;
-  type: "user";
-  attributes: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email_address: string;
-    phone: string;
-    avatar_url: string;
-    date_of_birth: string;
-    full_name: string;
-  };
-  relationships: {
-    groups: {
-      data: {
-        id: string;
-        type: "group";
-      }[];
-    };
-  };
 }
 
 // Auth service methods

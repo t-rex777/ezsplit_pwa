@@ -1,4 +1,4 @@
-import type { UserResource } from "@/api/services/auth";
+import type { UserResource } from "@/api/services/users";
 import { usersService } from "@/api/services/users";
 import { FieldInfo } from "@/components/formFieldInfo";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Users, UserPlus, Search, X } from "lucide-react";
+import { Search, UserPlus, Users, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface EditGroupFormProps {
@@ -28,6 +28,7 @@ export interface EditGroupFormData {
   description: string;
   created_by_id: string;
   users: UserResource[];
+  user_ids: string[]; // Required to match CreateGroupParams
 }
 
 const EditGroupForm = ({ defaultValues, onSubmit }: EditGroupFormProps) => {
@@ -43,7 +44,7 @@ const EditGroupForm = ({ defaultValues, onSubmit }: EditGroupFormProps) => {
     queryKey: ["users", searchQuery],
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 5,
-    getNextPageParam: (lastPage) => lastPage.meta?.pagination?.next,
+    getNextPageParam: (lastPage) => lastPage.meta.next_page,
     initialPageParam: 1,
     queryFn: async () => await usersService.searchUsers(searchQuery),
     enabled: searchQuery.length > 0 || showSearchResults,
@@ -63,15 +64,16 @@ const EditGroupForm = ({ defaultValues, onSubmit }: EditGroupFormProps) => {
     },
     onSubmit: async ({ value }) => {
       const params = {
-        name: value.name,
-        description: value.description,
+        name: value.name || "",
+        description: value.description || "",
         created_by_id: session.id,
         user_ids: [
           ...new Set([...selectedUsers.map((user) => user.id), session.id]),
         ],
+        users: selectedUsers, // Include the users array for the interface
       };
 
-      await onSubmit(params);
+      await onSubmit(params as EditGroupFormData);
     },
   });
 
@@ -98,8 +100,13 @@ const EditGroupForm = ({ defaultValues, onSubmit }: EditGroupFormProps) => {
   useEffect(() => {
     if (Number(defaultValues?.users?.length) > 0) {
       setSelectedUsers(defaultValues?.users ?? []);
+      // Also update the form's user_ids field
+      form.setFieldValue(
+        "user_ids",
+        defaultValues?.users?.map((user) => user.id) || [],
+      );
     }
-  }, [defaultValues]);
+  }, [defaultValues, form]);
 
   return (
     <form

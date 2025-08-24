@@ -1,33 +1,32 @@
 import { apiCall } from "../client";
+import type { BaseResource, PaginatedResponse } from "../index";
 
-// User-related types
-export interface User {
-  id: string;
+export interface UserResource extends BaseResource {
+  type: "user";
   attributes: {
-    full_name: string;
+    id: string;
     first_name: string;
     last_name: string;
     email_address: string;
     phone: string;
     avatar_url?: string;
     date_of_birth: string;
+    full_name: string;
     created_at: string;
     updated_at: string;
   };
-}
-
-export interface UsersResponse {
-  data: User[];
-  meta?: {
-    pagination?: {
-      current: number;
-      next: number | null;
-      prev: number | null;
-      total_pages: number;
-      total_count: number;
+  relationships?: {
+    groups?: {
+      data: {
+        id: string;
+        type: "group";
+      }[];
     };
   };
 }
+
+// Users response using standardized format
+export interface UsersResponse extends PaginatedResponse<UserResource> {}
 
 // Users service methods
 export const usersService = {
@@ -41,12 +40,12 @@ export const usersService = {
   },
 
   // Get single user by ID
-  getUser: async (id: string): Promise<User> => {
-    const response = await apiCall<{ data: User }>({
+  getUser: async (id: string): Promise<{ data: UserResource }> => {
+    const response = await apiCall<{ data: UserResource }>({
       method: "GET",
       url: `/users/${id}`,
     });
-    return response.data;
+    return response;
   },
 
   // Search users by name or email

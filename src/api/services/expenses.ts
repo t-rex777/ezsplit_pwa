@@ -1,9 +1,9 @@
 import { apiCall } from "../client";
-import type { ApiResponse, PaginatedResponse, TResource } from "../index";
+import type { ApiResponse, BaseResource, PaginatedResponse } from "../index";
 
 // Expense-related types
 export interface Expense
-  extends TResource<{
+  extends BaseResource<{
     name: string;
     amount: number;
     split_type: "equal" | "exact" | "percentage";
@@ -28,18 +28,25 @@ export interface Expense
       color?: string;
     };
     expenses_users: ExpenseParticipant[];
-  }> {}
+  }> {
+  type: "expense";
+}
 
-export interface ExpenseParticipant {
-  paid: boolean;
-  amount: number;
-  expense_id: string;
-  user_id: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
+export interface ExpenseParticipant
+  extends BaseResource<{
+    paid: boolean;
+    amount: number;
+    expense_id: string;
+    user_id: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
+    created_at: string;
+    updated_at: string;
+  }> {
+  type: "expenses_user";
 }
 
 export interface CreateExpenseRequest {
@@ -81,11 +88,13 @@ export const expenseService = {
   // Get single expense by ID
   getExpense: async (
     id: string,
-  ): Promise<{ data: Expense; included: TResource[] }> => {
-    const response = await apiCall<{ data: Expense; included: TResource[] }>({
-      method: "GET",
-      url: `/expenses/${id}`,
-    });
+  ): Promise<{ data: Expense; included: BaseResource[] }> => {
+    const response = await apiCall<{ data: Expense; included: BaseResource[] }>(
+      {
+        method: "GET",
+        url: `/expenses/${id}`,
+      },
+    );
 
     return response;
   },

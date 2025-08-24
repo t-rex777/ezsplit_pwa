@@ -69,18 +69,50 @@ function RouteComponent() {
       onSubmit={handleSubmit}
       defaultValues={{
         amount: expense.attributes.amount,
-        category_id: expense.relationships.category.data.id,
+        category_id: (() => {
+          const categoryRel = expense.relationships?.category;
+          if (
+            categoryRel &&
+            "data" in categoryRel &&
+            !Array.isArray(categoryRel.data)
+          ) {
+            return categoryRel.data.id;
+          }
+          return "";
+        })(),
         currency: expense.attributes.currency,
         distribution: included
           .filter((item) => item.type === "expenses_users")
-          .map((expenseUser) => ({
-            amount: expenseUser.attributes.amount,
-            user_id: expenseUser.relationships.user.data.id,
-          })),
+          .map((expenseUser) => {
+            const userRel = expenseUser.relationships?.user;
+            if (userRel && "data" in userRel && !Array.isArray(userRel.data)) {
+              return {
+                amount: expenseUser.attributes.amount as number,
+                user_id: userRel.data.id,
+              };
+            }
+            return null;
+          })
+          .filter(
+            (item): item is { amount: number; user_id: string } =>
+              item !== null,
+          ),
         expense_date: expense.attributes.expense_date,
-        group_id: expense.relationships.group.data.id,
+        group_id: (() => {
+          const groupRel = expense.relationships?.group;
+          if (groupRel && "data" in groupRel && !Array.isArray(groupRel.data)) {
+            return groupRel.data.id;
+          }
+          return "";
+        })(),
         name: expense.attributes.name,
-        payer_id: expense.relationships.payer.data.id,
+        payer_id: (() => {
+          const payerRel = expense.relationships?.payer;
+          if (payerRel && "data" in payerRel && !Array.isArray(payerRel.data)) {
+            return payerRel.data.id;
+          }
+          return "";
+        })(),
         split_type: expense.attributes.split_type,
         settled: expense.attributes.settled,
       }}

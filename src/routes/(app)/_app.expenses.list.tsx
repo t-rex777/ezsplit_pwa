@@ -4,7 +4,7 @@ import { ExpenseListEmpty } from "@/components/expense/expenseListEmpty";
 import { ExpenseListLoading } from "@/components/expense/expenseListLoading";
 import { Button } from "@/components/ui/button";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { Plus, Receipt } from "lucide-react";
 import { Suspense } from "react";
 
@@ -15,9 +15,11 @@ export const Route = createFileRoute("/(app)/_app/expenses/list")({
 function ExpensesPage() {
   const { data: expenses } = useSuspenseInfiniteQuery({
     queryKey: ["expenses"],
-    getNextPageParam: (lastPage) => lastPage.meta.next_page + 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.next_page ? lastPage.meta.next_page + 1 : undefined,
     initialPageParam: 1,
-    getPreviousPageParam: (firstPage) => firstPage.meta.prev_page - 1,
+    getPreviousPageParam: (firstPage) =>
+      firstPage.meta.prev_page ? firstPage.meta.prev_page - 1 : undefined,
     queryFn: async () => await expenseService.getExpenses(),
     select: (data) => {
       return data.pages.flatMap((page) => page.data);

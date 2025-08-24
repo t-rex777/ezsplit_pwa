@@ -1,14 +1,16 @@
-import { apiCall, type PaginatedResponse, type TResource } from "@/api";
+import { type BaseResource, type PaginatedResponse, apiCall } from "@/api";
 
 export interface Category
-  extends TResource<{
+  extends BaseResource<{
     name: string;
     icon: string | null;
     color: string | null;
     created_by_id: string;
     created_at: string;
     updated_at: string | null;
-  }> {}
+  }> {
+  type: "category";
+}
 
 export const categoryService = {
   async create(
@@ -16,8 +18,8 @@ export const categoryService = {
     icon: string | null,
     color: string | null,
     created_by_id: string,
-  ) {
-    const response = await apiCall<PaginatedResponse<Category>>({
+  ): Promise<{ data: Category }> {
+    const response = await apiCall<{ data: Category }>({
       url: "/categories",
       method: "POST",
       data: { name, icon, color, created_by_id },
@@ -26,7 +28,7 @@ export const categoryService = {
     return response;
   },
 
-  async getCategories() {
+  async getCategories(): Promise<PaginatedResponse<Category>> {
     const response = await apiCall<PaginatedResponse<Category>>({
       url: "/categories",
       method: "GET",
@@ -35,8 +37,8 @@ export const categoryService = {
     return response;
   },
 
-  async getCategory(id: string) {
-    const response = await apiCall<PaginatedResponse<Category>>({
+  async getCategory(id: string): Promise<{ data: Category }> {
+    const response = await apiCall<{ data: Category }>({
       url: `/categories/${id}`,
       method: "GET",
     });
@@ -49,14 +51,20 @@ export const categoryService = {
     name: string,
     icon: string | null,
     color: string | null,
-  ) {
-    const response = await apiCall<PaginatedResponse<Category>>({
+  ): Promise<{ data: Category }> {
+    const response = await apiCall<{ data: Category }>({
       url: `/categories/${id}`,
       method: "PUT",
-
       data: { name, icon, color },
     });
 
     return response;
+  },
+
+  async deleteCategory(id: string): Promise<void> {
+    await apiCall({
+      url: `/categories/${id}`,
+      method: "DELETE",
+    });
   },
 };

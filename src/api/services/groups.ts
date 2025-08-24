@@ -1,16 +1,16 @@
-import type { TResource } from "@/api";
+import type { BaseResource, PaginatedResponse } from "@/api";
 import { apiCall } from "../client";
 
 // Group-related types
-export interface Group {
-  id: string;
-  attributes: {
+export interface Group
+  extends BaseResource<{
     name: string;
     description: string;
     created_by_id: string;
     created_at: string;
     updated_at: string;
-  };
+  }> {
+  type: "group";
   relationships?: {
     users?: {
       data: Array<{
@@ -21,19 +21,7 @@ export interface Group {
   };
 }
 
-export interface GroupsResponse {
-  data: Group[];
-  included?: TResource[];
-  meta?: {
-    pagination?: {
-      current: number;
-      next: number | null;
-      prev: number | null;
-      total_pages: number;
-      total_count: number;
-    };
-  };
-}
+export interface GroupsResponse extends PaginatedResponse<Group> {}
 
 export interface CreateGroupParams {
   name: string;
@@ -56,8 +44,8 @@ export const groupsService = {
   // Get single group by ID
   getGroup: async (
     id: string,
-  ): Promise<{ data: Group; included?: TResource[] }> => {
-    const response = await apiCall<{ data: Group; included?: TResource[] }>({
+  ): Promise<{ data: Group; included?: BaseResource[] }> => {
+    const response = await apiCall<{ data: Group; included?: BaseResource[] }>({
       method: "GET",
       url: `/groups/${id}`,
     });
