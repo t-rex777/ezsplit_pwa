@@ -19,6 +19,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       await context.queryClient.fetchQuery({
         queryKey: ["session"],
         queryFn: async () => await authService.getProfile(),
+        gcTime: Number.POSITIVE_INFINITY,
+        staleTime: Number.POSITIVE_INFINITY,
       });
     }
   },

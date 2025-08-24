@@ -39,16 +39,16 @@ function RouteComponent() {
   // Update expense mutation
   const updateExpenseMutation = useMutation({
     mutationFn: (params: Partial<UpdateExpenseRequest>) =>
-      expenseService.updateExpense(id, params),
+      expenseService.updateExpense(id, { ...params }),
     onSuccess: async () => {
       toast({
         title: "Success!",
         description: "Expense updated successfully!",
-        variant: "default",
+        variant: "success",
       });
 
       await queryClient.invalidateQueries({ queryKey: ["expenses"] });
-      navigate({ to: "/expenses/list" });
+      await navigate({ to: "/expenses/list" });
     },
     onError: (err) => {
       console.log(err, "LOGGER");
