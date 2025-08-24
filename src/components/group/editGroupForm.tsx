@@ -122,7 +122,7 @@ const EditGroupForm = ({ defaultValues, onSubmit }: EditGroupFormProps) => {
           {/* Header */}
           <div className="text-center space-y-2 animate-fade-in">
             <h1 className="text-3xl font-bold text-foreground">
-              Create New Group
+              {isCreate ? "Create New Group" : `Edit ${defaultValues.name}`}
             </h1>
             <p className="text-muted-foreground">
               Set up a group and add members to start splitting expenses

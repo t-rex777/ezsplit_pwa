@@ -55,7 +55,7 @@ export const categoryService = {
     const response = await apiCall<{ data: Category }>({
       url: `/categories/${id}`,
       method: "PUT",
-      data: { name, icon, color },
+      data: { category: { name, icon, color } },
     });
 
     return response;

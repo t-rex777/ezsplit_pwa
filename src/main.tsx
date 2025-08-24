@@ -15,16 +15,7 @@ import { ThemeProvider } from "./lib/theme";
 import reportWebVitals from "./reportWebVitals.ts";
 import "./styles.css";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      gcTime: 0,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 // Create a new router instance
 const router = createRouter({
