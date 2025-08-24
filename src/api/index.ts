@@ -7,10 +7,7 @@ export interface TResource<T = unknown> {
   id: string;
   type: string;
   attributes: T;
-  relationships: Record<
-    string,
-    ResourceRelationship[] | ResourceRelationships[]
-  >;
+  relationships: Record<string, ResourceRelationship[] | ResourceRelationships>;
 }
 
 export interface ApiResponse<T = unknown> {

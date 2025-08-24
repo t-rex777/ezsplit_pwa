@@ -1,4 +1,8 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  type AxiosInstance,
+  type AxiosRequestConfig,
+} from "axios";
 
 // Base API configuration
 const API_BASE_URL =
@@ -82,15 +86,15 @@ export const apiCall = async <T = unknown>(
     return response.data;
   } catch (error) {
     // todo: handle error
-    if (error.response?.status === 404) {
+    if (error instanceof AxiosError && error.response?.status === 404) {
       console.error("Not Found", error);
     }
 
-    if (error.response?.status === 500) {
+    if (error instanceof AxiosError && error.response?.status === 500) {
       console.error("Internal Server Error", error);
     }
 
-    return error;
+    throw error;
   }
 };
 

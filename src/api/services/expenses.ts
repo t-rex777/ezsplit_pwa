@@ -58,9 +58,7 @@ export interface CreateExpenseRequest {
   }>;
 }
 
-export interface UpdateExpenseRequest extends Partial<CreateExpenseRequest> {
-  id: string;
-}
+export interface UpdateExpenseRequest extends Partial<CreateExpenseRequest> {}
 
 // Expense service methods
 export const expenseService = {
@@ -81,12 +79,15 @@ export const expenseService = {
   },
 
   // Get single expense by ID
-  getExpense: async (id: string): Promise<Expense> => {
-    const response = await apiCall<ApiResponse<Expense>>({
+  getExpense: async (
+    id: string,
+  ): Promise<{ data: Expense; included: TResource[] }> => {
+    const response = await apiCall<{ data: Expense; included: TResource[] }>({
       method: "GET",
       url: `/expenses/${id}`,
     });
-    return response.data;
+
+    return response;
   },
 
   // Create new expense
@@ -103,13 +104,13 @@ export const expenseService = {
 
   // Update existing expense
   updateExpense: async (
+    id: string,
     expenseData: UpdateExpenseRequest,
   ): Promise<Expense> => {
-    const { id, ...data } = expenseData;
     const response = await apiCall<ApiResponse<Expense>>({
       method: "PUT",
       url: `/expenses/${id}`,
-      data: { expense: data },
+      data: { expense: expenseData },
     });
     return response.data;
   },

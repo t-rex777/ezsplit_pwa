@@ -46,16 +46,16 @@ function ExpensesPage() {
           {expenses.length === 0 ? (
             <ExpenseListEmpty />
           ) : (
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3">
               {expenses.map((expense) => (
-                // <Link
-                //   to="/groups/$id"
-                //   params={{ id: expense.id }}
-                //   key={expense.id}
-                //   className="cursor-pointer"
-                // >
-                <ExpenseCard key={expense.id} expense={expense} />
-                // </Link>
+                <Link
+                  to="/expenses/$id"
+                  params={{ id: expense.id }}
+                  key={expense.id}
+                  className="cursor-pointer"
+                >
+                  <ExpenseCard key={expense.id} expense={expense} />
+                </Link>
               ))}
             </div>
           )}
