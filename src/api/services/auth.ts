@@ -1,6 +1,6 @@
 import { apiCall } from "../client";
 import type { ApiResponse } from "../index";
-import type { UserResource } from "./users";
+import type { User } from "./users";
 
 // Auth-related types
 export interface LoginRequest {
@@ -38,8 +38,8 @@ export const authService = {
   },
 
   // Register new user
-  register: async (userData: RegisterRequest): Promise<UserResource> => {
-    const response = await apiCall<ApiResponse<UserResource>>({
+  register: async (userData: RegisterRequest): Promise<User> => {
+    const response = await apiCall<ApiResponse<User>>({
       method: "POST",
       url: "/auth/register",
       data: userData,
@@ -48,8 +48,8 @@ export const authService = {
   },
 
   // Get current user profile
-  getProfile: async (): Promise<UserResource> => {
-    const response = await apiCall<ApiResponse<UserResource>>({
+  getProfile: async (): Promise<User> => {
+    const response = await apiCall<ApiResponse<User>>({
       method: "GET",
       url: "/session",
     });

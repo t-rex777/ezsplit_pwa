@@ -1,6 +1,6 @@
 import { categoryService } from "@/api/services/categories";
 import { groupsService } from "@/api/services/groups";
-import type { UserResource } from "@/api/services/users";
+import type { User } from "@/api/services/users";
 import { FieldInfo } from "@/components/formFieldInfo";
 import { Button } from "@/components/ui/button";
 import {
@@ -61,7 +61,7 @@ const EditExpenseForm = ({
     defaultValues?.split_type || "equal",
   );
 
-  const session = queryClient.getQueryData(["session"]) as UserResource;
+  const session = queryClient.getQueryData(["session"]) as User;
 
   const { data: categories } = useSuspenseQuery({
     queryKey: ["categories"],
@@ -86,7 +86,7 @@ const EditExpenseForm = ({
     select: (data) => {
       const members = (data.included ?? []).filter(
         (member) => member.type === "user",
-      ) as unknown as UserResource[];
+      ) as unknown as User[];
 
       const membersOptions = members.map((user) => ({
         id: user.id,

@@ -1,4 +1,4 @@
-import type { UserResource } from "@/api/services/users";
+import type { User } from "@/api/services/users";
 import { usersService } from "@/api/services/users";
 import { FieldInfo } from "@/components/formFieldInfo";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ export interface EditGroupFormData {
   name: string;
   description: string;
   created_by_id: string;
-  users: UserResource[];
+  users: User[];
   user_ids: string[]; // Required to match CreateGroupParams
 }
 
@@ -36,7 +36,7 @@ const EditGroupForm = ({ defaultValues, onSubmit }: EditGroupFormProps) => {
   const queryClient = useQueryClient();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState<UserResource[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
 
   // Fetch users for search
@@ -53,7 +53,7 @@ const EditGroupForm = ({ defaultValues, onSubmit }: EditGroupFormProps) => {
     },
   });
 
-  const session = queryClient.getQueryData(["session"]) as UserResource;
+  const session = queryClient.getQueryData(["session"]) as User;
 
   const form = useForm({
     defaultValues: defaultValues ?? {
@@ -77,7 +77,7 @@ const EditGroupForm = ({ defaultValues, onSubmit }: EditGroupFormProps) => {
     },
   });
 
-  const handleUserSelect = (user: UserResource) => {
+  const handleUserSelect = (user: User) => {
     if (!selectedUsers.find((u) => u.id === user.id)) {
       setSelectedUsers((prev) => [...prev, user]);
     }

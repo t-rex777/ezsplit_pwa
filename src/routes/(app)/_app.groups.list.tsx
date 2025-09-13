@@ -1,9 +1,9 @@
 import { groupsService } from "@/api/services/groups";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ChevronRight, Plus, Users } from "lucide-react";
+import { Plus, Users } from "lucide-react";
+import GroupListingCard from "@/components/group/groupListingCard";
 
 export const Route = createFileRoute("/(app)/_app/groups/list")({
   component: GroupsPage,
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/(app)/_app/groups/list")({
 
 function GroupsPage() {
   const {
-    data: { data: groups },
+    data: { data: groups, included: allUsers },
   } = useSuspenseQuery({
     queryKey: ["groups"],
     queryFn: async () => await groupsService.getGroups(),
@@ -55,26 +55,11 @@ function GroupsPage() {
         ) : (
           <div className="flex flex-col gap-3">
             {groups.map((group) => (
-              <Link to="/groups/$id" params={{ id: group.id }} key={group.id}>
-                <Card className="p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Users className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-foreground">
-                          {group.attributes.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          3 members • $45.50 pending
-                        </p>
-                      </div>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                </Card>
-              </Link>
+              <GroupListingCard
+                key={group.id}
+                group={group}
+                allUsers={allUsers}
+              />
             ))}
           </div>
         )}

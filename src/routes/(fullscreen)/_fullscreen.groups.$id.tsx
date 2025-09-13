@@ -1,5 +1,5 @@
 import { type CreateGroupParams, groupsService } from "@/api/services/groups";
-import type { UserResource } from "@/api/services/users";
+import type { User } from "@/api/services/users";
 import EditGroupForm, {
   type EditGroupFormData,
 } from "@/components/group/editGroupForm";
@@ -65,7 +65,7 @@ function RouteComponent() {
   const userIds = group.relationships?.users?.data.map((user) => user.id) ?? [];
   const users = included?.filter(
     (user) => userIds?.includes(user.id) && user.type === "user",
-  ) as UserResource[] | undefined;
+  ) as User[] | undefined;
 
   const defaultValues: EditGroupFormData = {
     name: group.attributes.name,

@@ -1,7 +1,7 @@
 import { apiCall } from "../client";
 import type { BaseResource, PaginatedResponse } from "../index";
 
-export interface UserResource extends BaseResource {
+export interface User extends BaseResource {
   type: "user";
   attributes: {
     id: string;
@@ -26,7 +26,7 @@ export interface UserResource extends BaseResource {
 }
 
 // Users response using standardized format
-export interface UsersResponse extends PaginatedResponse<UserResource> {}
+export interface UsersResponse extends PaginatedResponse<User> {}
 
 // Users service methods
 export const usersService = {
@@ -40,8 +40,8 @@ export const usersService = {
   },
 
   // Get single user by ID
-  getUser: async (id: string): Promise<{ data: UserResource }> => {
-    const response = await apiCall<{ data: UserResource }>({
+  getUser: async (id: string): Promise<{ data: User }> => {
+    const response = await apiCall<{ data: User }>({
       method: "GET",
       url: `/users/${id}`,
     });
