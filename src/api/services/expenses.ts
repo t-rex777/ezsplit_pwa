@@ -1,9 +1,9 @@
 import { apiCall } from "../client";
-import type { ApiResponse, PaginatedResponse, TResource } from "../index";
+import type { ApiResponse, BaseResource, PaginatedResponse } from "../index";
 
 // Expense-related types
 export interface Expense
-  extends TResource<{
+  extends BaseResource<{
     name: string;
     amount: number;
     split_type: "equal" | "exact" | "percentage";
@@ -28,18 +28,25 @@ export interface Expense
       color?: string;
     };
     expenses_users: ExpenseParticipant[];
-  }> {}
+  }> {
+  type: "expense";
+}
 
-export interface ExpenseParticipant {
-  paid: boolean;
-  amount: number;
-  expense_id: string;
-  user_id: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
+export interface ExpenseParticipant
+  extends BaseResource<{
+    paid: boolean;
+    amount: number;
+    expense_id: string;
+    user_id: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
+    created_at: string;
+    updated_at: string;
+  }> {
+  type: "expenses_user";
 }
 
 export interface CreateExpenseRequest {
@@ -58,9 +65,7 @@ export interface CreateExpenseRequest {
   }>;
 }
 
-export interface UpdateExpenseRequest extends Partial<CreateExpenseRequest> {
-  id: string;
-}
+export interface UpdateExpenseRequest extends Partial<CreateExpenseRequest> {}
 
 // Expense service methods
 export const expenseService = {
@@ -81,12 +86,17 @@ export const expenseService = {
   },
 
   // Get single expense by ID
-  getExpense: async (id: string): Promise<Expense> => {
-    const response = await apiCall<ApiResponse<Expense>>({
-      method: "GET",
-      url: `/expenses/${id}`,
-    });
-    return response.data;
+  getExpense: async (
+    id: string,
+  ): Promise<{ data: Expense; included: BaseResource[] }> => {
+    const response = await apiCall<{ data: Expense; included: BaseResource[] }>(
+      {
+        method: "GET",
+        url: `/expenses/${id}`,
+      },
+    );
+
+    return response;
   },
 
   // Create new expense
@@ -103,13 +113,13 @@ export const expenseService = {
 
   // Update existing expense
   updateExpense: async (
+    id: string,
     expenseData: UpdateExpenseRequest,
   ): Promise<Expense> => {
-    const { id, ...data } = expenseData;
     const response = await apiCall<ApiResponse<Expense>>({
       method: "PUT",
       url: `/expenses/${id}`,
-      data: { expense: data },
+      data: { expense: expenseData },
     });
     return response.data;
   },

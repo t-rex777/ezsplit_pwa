@@ -15,12 +15,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as fullscreenFullscreenRouteImport } from './routes/(fullscreen)/_fullscreen'
 import { Route as authAuthRouteImport } from './routes/(auth)/_auth'
 import { Route as appAppRouteImport } from './routes/(app)/_app'
+import { Route as authAuthRegisterRouteImport } from './routes/(auth)/_auth.register'
 import { Route as authAuthLoginRouteImport } from './routes/(auth)/_auth.login'
 import { Route as appAppSettingsRouteImport } from './routes/(app)/_app.settings'
 import { Route as appAppHomeRouteImport } from './routes/(app)/_app.home'
+import { Route as appAppCategoriesRouteImport } from './routes/(app)/_app.categories'
 import { Route as fullscreenFullscreenGroupsNewRouteImport } from './routes/(fullscreen)/_fullscreen.groups.new'
 import { Route as fullscreenFullscreenGroupsIdRouteImport } from './routes/(fullscreen)/_fullscreen.groups.$id'
 import { Route as fullscreenFullscreenExpensesNewRouteImport } from './routes/(fullscreen)/_fullscreen.expenses.new'
+import { Route as fullscreenFullscreenExpensesIdRouteImport } from './routes/(fullscreen)/_fullscreen.expenses.$id'
 import { Route as appAppGroupsListRouteImport } from './routes/(app)/_app.groups.list'
 import { Route as appAppExpensesListRouteImport } from './routes/(app)/_app.expenses.list'
 
@@ -57,6 +60,11 @@ const appAppRoute = appAppRouteImport.update({
   id: '/_app',
   getParentRoute: () => appRoute,
 } as any)
+const authAuthRegisterRoute = authAuthRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => authAuthRoute,
+} as any)
 const authAuthLoginRoute = authAuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -70,6 +78,11 @@ const appAppSettingsRoute = appAppSettingsRouteImport.update({
 const appAppHomeRoute = appAppHomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => appAppRoute,
+} as any)
+const appAppCategoriesRoute = appAppCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
   getParentRoute: () => appAppRoute,
 } as any)
 const fullscreenFullscreenGroupsNewRoute =
@@ -90,6 +103,12 @@ const fullscreenFullscreenExpensesNewRoute =
     path: '/expenses/new',
     getParentRoute: () => fullscreenFullscreenRoute,
   } as any)
+const fullscreenFullscreenExpensesIdRoute =
+  fullscreenFullscreenExpensesIdRouteImport.update({
+    id: '/expenses/$id',
+    path: '/expenses/$id',
+    getParentRoute: () => fullscreenFullscreenRoute,
+  } as any)
 const appAppGroupsListRoute = appAppGroupsListRouteImport.update({
   id: '/groups/list',
   path: '/groups/list',
@@ -103,22 +122,28 @@ const appAppExpensesListRoute = appAppExpensesListRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof fullscreenFullscreenRouteWithChildren
+  '/categories': typeof appAppCategoriesRoute
   '/home': typeof appAppHomeRoute
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
+  '/register': typeof authAuthRegisterRoute
   '/expenses/list': typeof appAppExpensesListRoute
   '/groups/list': typeof appAppGroupsListRoute
+  '/expenses/$id': typeof fullscreenFullscreenExpensesIdRoute
   '/expenses/new': typeof fullscreenFullscreenExpensesNewRoute
   '/groups/$id': typeof fullscreenFullscreenGroupsIdRoute
   '/groups/new': typeof fullscreenFullscreenGroupsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof fullscreenFullscreenRouteWithChildren
+  '/categories': typeof appAppCategoriesRoute
   '/home': typeof appAppHomeRoute
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
+  '/register': typeof authAuthRegisterRoute
   '/expenses/list': typeof appAppExpensesListRoute
   '/groups/list': typeof appAppGroupsListRoute
+  '/expenses/$id': typeof fullscreenFullscreenExpensesIdRoute
   '/expenses/new': typeof fullscreenFullscreenExpensesNewRoute
   '/groups/$id': typeof fullscreenFullscreenGroupsIdRoute
   '/groups/new': typeof fullscreenFullscreenGroupsNewRoute
@@ -132,11 +157,14 @@ export interface FileRoutesById {
   '/(auth)/_auth': typeof authAuthRouteWithChildren
   '/(fullscreen)': typeof fullscreenRouteWithChildren
   '/(fullscreen)/_fullscreen': typeof fullscreenFullscreenRouteWithChildren
+  '/(app)/_app/categories': typeof appAppCategoriesRoute
   '/(app)/_app/home': typeof appAppHomeRoute
   '/(app)/_app/settings': typeof appAppSettingsRoute
   '/(auth)/_auth/login': typeof authAuthLoginRoute
+  '/(auth)/_auth/register': typeof authAuthRegisterRoute
   '/(app)/_app/expenses/list': typeof appAppExpensesListRoute
   '/(app)/_app/groups/list': typeof appAppGroupsListRoute
+  '/(fullscreen)/_fullscreen/expenses/$id': typeof fullscreenFullscreenExpensesIdRoute
   '/(fullscreen)/_fullscreen/expenses/new': typeof fullscreenFullscreenExpensesNewRoute
   '/(fullscreen)/_fullscreen/groups/$id': typeof fullscreenFullscreenGroupsIdRoute
   '/(fullscreen)/_fullscreen/groups/new': typeof fullscreenFullscreenGroupsNewRoute
@@ -145,22 +173,28 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/categories'
     | '/home'
     | '/settings'
     | '/login'
+    | '/register'
     | '/expenses/list'
     | '/groups/list'
+    | '/expenses/$id'
     | '/expenses/new'
     | '/groups/$id'
     | '/groups/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/categories'
     | '/home'
     | '/settings'
     | '/login'
+    | '/register'
     | '/expenses/list'
     | '/groups/list'
+    | '/expenses/$id'
     | '/expenses/new'
     | '/groups/$id'
     | '/groups/new'
@@ -173,11 +207,14 @@ export interface FileRouteTypes {
     | '/(auth)/_auth'
     | '/(fullscreen)'
     | '/(fullscreen)/_fullscreen'
+    | '/(app)/_app/categories'
     | '/(app)/_app/home'
     | '/(app)/_app/settings'
     | '/(auth)/_auth/login'
+    | '/(auth)/_auth/register'
     | '/(app)/_app/expenses/list'
     | '/(app)/_app/groups/list'
+    | '/(fullscreen)/_fullscreen/expenses/$id'
     | '/(fullscreen)/_fullscreen/expenses/new'
     | '/(fullscreen)/_fullscreen/groups/$id'
     | '/(fullscreen)/_fullscreen/groups/new'
@@ -241,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appAppRouteImport
       parentRoute: typeof appRoute
     }
+    '/(auth)/_auth/register': {
+      id: '/(auth)/_auth/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof authAuthRegisterRouteImport
+      parentRoute: typeof authAuthRoute
+    }
     '/(auth)/_auth/login': {
       id: '/(auth)/_auth/login'
       path: '/login'
@@ -260,6 +304,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof appAppHomeRouteImport
+      parentRoute: typeof appAppRoute
+    }
+    '/(app)/_app/categories': {
+      id: '/(app)/_app/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof appAppCategoriesRouteImport
       parentRoute: typeof appAppRoute
     }
     '/(fullscreen)/_fullscreen/groups/new': {
@@ -283,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof fullscreenFullscreenExpensesNewRouteImport
       parentRoute: typeof fullscreenFullscreenRoute
     }
+    '/(fullscreen)/_fullscreen/expenses/$id': {
+      id: '/(fullscreen)/_fullscreen/expenses/$id'
+      path: '/expenses/$id'
+      fullPath: '/expenses/$id'
+      preLoaderRoute: typeof fullscreenFullscreenExpensesIdRouteImport
+      parentRoute: typeof fullscreenFullscreenRoute
+    }
     '/(app)/_app/groups/list': {
       id: '/(app)/_app/groups/list'
       path: '/groups/list'
@@ -301,6 +359,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface appAppRouteChildren {
+  appAppCategoriesRoute: typeof appAppCategoriesRoute
   appAppHomeRoute: typeof appAppHomeRoute
   appAppSettingsRoute: typeof appAppSettingsRoute
   appAppExpensesListRoute: typeof appAppExpensesListRoute
@@ -308,6 +367,7 @@ interface appAppRouteChildren {
 }
 
 const appAppRouteChildren: appAppRouteChildren = {
+  appAppCategoriesRoute: appAppCategoriesRoute,
   appAppHomeRoute: appAppHomeRoute,
   appAppSettingsRoute: appAppSettingsRoute,
   appAppExpensesListRoute: appAppExpensesListRoute,
@@ -329,10 +389,12 @@ const appRouteWithChildren = appRoute._addFileChildren(appRouteChildren)
 
 interface authAuthRouteChildren {
   authAuthLoginRoute: typeof authAuthLoginRoute
+  authAuthRegisterRoute: typeof authAuthRegisterRoute
 }
 
 const authAuthRouteChildren: authAuthRouteChildren = {
   authAuthLoginRoute: authAuthLoginRoute,
+  authAuthRegisterRoute: authAuthRegisterRoute,
 }
 
 const authAuthRouteWithChildren = authAuthRoute._addFileChildren(
@@ -350,12 +412,14 @@ const authRouteChildren: authRouteChildren = {
 const authRouteWithChildren = authRoute._addFileChildren(authRouteChildren)
 
 interface fullscreenFullscreenRouteChildren {
+  fullscreenFullscreenExpensesIdRoute: typeof fullscreenFullscreenExpensesIdRoute
   fullscreenFullscreenExpensesNewRoute: typeof fullscreenFullscreenExpensesNewRoute
   fullscreenFullscreenGroupsIdRoute: typeof fullscreenFullscreenGroupsIdRoute
   fullscreenFullscreenGroupsNewRoute: typeof fullscreenFullscreenGroupsNewRoute
 }
 
 const fullscreenFullscreenRouteChildren: fullscreenFullscreenRouteChildren = {
+  fullscreenFullscreenExpensesIdRoute: fullscreenFullscreenExpensesIdRoute,
   fullscreenFullscreenExpensesNewRoute: fullscreenFullscreenExpensesNewRoute,
   fullscreenFullscreenGroupsIdRoute: fullscreenFullscreenGroupsIdRoute,
   fullscreenFullscreenGroupsNewRoute: fullscreenFullscreenGroupsNewRoute,

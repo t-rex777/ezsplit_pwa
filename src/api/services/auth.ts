@@ -1,5 +1,6 @@
 import { apiCall } from "../client";
 import type { ApiResponse } from "../index";
+import type { User } from "./users";
 
 // Auth-related types
 export interface LoginRequest {
@@ -16,32 +17,14 @@ export interface LoginResponse {
 }
 
 export interface RegisterRequest {
-  name: string;
-  email: string;
+  email_address: string;
   password: string;
-}
-
-export interface UserResource {
-  id: string;
-  type: "user";
-  attributes: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email_address: string;
-    phone: string;
-    avatar_url: string;
-    date_of_birth: string;
-    full_name: string;
-  };
-  relationships: {
-    groups: {
-      data: {
-        id: string;
-        type: "group";
-      }[];
-    };
-  };
+  password_confirmation: string;
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  date_of_birth?: string;
+  token?: string;
 }
 
 // Auth service methods
@@ -60,18 +43,20 @@ export const authService = {
   },
 
   // Register new user
-  register: async (userData: RegisterRequest): Promise<UserResource> => {
-    const response = await apiCall<ApiResponse<UserResource>>({
+  register: async (userData: RegisterRequest): Promise<User> => {
+    const response = await apiCall<ApiResponse<User>>({
       method: "POST",
-      url: "/auth/register",
-      data: userData,
+      url: "/user_registers",
+      data: {
+        user: userData,
+      },
     });
     return response.data;
   },
 
   // Get current user profile
-  getProfile: async (): Promise<UserResource> => {
-    const response = await apiCall<ApiResponse<UserResource>>({
+  getProfile: async (): Promise<User> => {
+    const response = await apiCall<ApiResponse<User>>({
       method: "GET",
       url: "/session",
     });

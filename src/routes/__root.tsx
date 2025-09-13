@@ -1,6 +1,7 @@
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 
 import { authService } from "@/api/services/auth";
+import { ShowAppLoading } from "@/components/showAppLoading";
 import { Toaster } from "@/components/ui/toaster";
 import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -19,12 +20,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       await context.queryClient.fetchQuery({
         queryKey: ["session"],
         queryFn: async () => await authService.getProfile(),
+        gcTime: Number.POSITIVE_INFINITY,
+        staleTime: Number.POSITIVE_INFINITY,
       });
     }
   },
   component: () => {
     return (
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<ShowAppLoading />}>
         <Outlet />
         <Toaster />
         {/* <TanStackRouterDevtools /> */}

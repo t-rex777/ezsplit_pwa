@@ -1,4 +1,10 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+} from "axios";
+import type { ApiError } from "./index";
 
 // Base API configuration
 const API_BASE_URL =
@@ -36,7 +42,7 @@ apiClient.interceptors.request.use(
 
 // Response interceptor - handle errors, logging, etc.
 apiClient.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     // Log response in development
     if (import.meta.env.DEV) {
       console.log("API Response:", {
@@ -48,7 +54,7 @@ apiClient.interceptors.response.use(
 
     return response;
   },
-  (error) => {
+  (error: AxiosError<ApiError>) => {
     // Handle common errors
     if (error.response?.status === 401) {
       // Unauthorized - redirect to login (cookies will be handled by browser)
@@ -59,8 +65,8 @@ apiClient.interceptors.response.use(
       console.error("Forbidden: Insufficient permissions");
     }
 
-    if (error.response?.status >= 500) {
-      console.error("Server error:", error.response.data);
+    if (error.response?.status && error.response.status >= 500) {
+      console.error("Server error:", error.response?.data);
     }
 
     console.error("API Error:", {
@@ -81,16 +87,20 @@ export const apiCall = async <T = unknown>(
     const response = await apiClient(config);
     return response.data;
   } catch (error) {
-    // todo: handle error
-    if (error.response?.status === 404) {
-      console.error("Not Found", error);
+    // Enhanced error handling with proper types
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 404) {
+        console.error("Not Found", error);
+      } else if (error.response?.status === 500) {
+        console.error("Internal Server Error", error);
+      } else if (error.response?.status === 422) {
+        console.error("Validation Error", error.response?.data);
+      } else if (error.response?.status === 429) {
+        console.error("Rate Limit Exceeded", error);
+      }
     }
 
-    if (error.response?.status === 500) {
-      console.error("Internal Server Error", error);
-    }
-
-    return error;
+    throw error;
   }
 };
 
