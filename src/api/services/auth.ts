@@ -17,9 +17,14 @@ export interface LoginResponse {
 }
 
 export interface RegisterRequest {
-  name: string;
-  email: string;
+  email_address: string;
   password: string;
+  password_confirmation: string;
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  date_of_birth?: string;
+  token?: string;
 }
 
 // Auth service methods
@@ -41,8 +46,10 @@ export const authService = {
   register: async (userData: RegisterRequest): Promise<User> => {
     const response = await apiCall<ApiResponse<User>>({
       method: "POST",
-      url: "/auth/register",
-      data: userData,
+      url: "/user_registers",
+      data: {
+        user: userData,
+      },
     });
     return response.data;
   },

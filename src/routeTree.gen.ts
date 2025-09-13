@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as fullscreenFullscreenRouteImport } from './routes/(fullscreen)/_fullscreen'
 import { Route as authAuthRouteImport } from './routes/(auth)/_auth'
 import { Route as appAppRouteImport } from './routes/(app)/_app'
+import { Route as authAuthRegisterRouteImport } from './routes/(auth)/_auth.register'
 import { Route as authAuthLoginRouteImport } from './routes/(auth)/_auth.login'
 import { Route as appAppSettingsRouteImport } from './routes/(app)/_app.settings'
 import { Route as appAppHomeRouteImport } from './routes/(app)/_app.home'
@@ -58,6 +59,11 @@ const authAuthRoute = authAuthRouteImport.update({
 const appAppRoute = appAppRouteImport.update({
   id: '/_app',
   getParentRoute: () => appRoute,
+} as any)
+const authAuthRegisterRoute = authAuthRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => authAuthRoute,
 } as any)
 const authAuthLoginRoute = authAuthLoginRouteImport.update({
   id: '/login',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof appAppHomeRoute
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
+  '/register': typeof authAuthRegisterRoute
   '/expenses/list': typeof appAppExpensesListRoute
   '/groups/list': typeof appAppGroupsListRoute
   '/expenses/$id': typeof fullscreenFullscreenExpensesIdRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/home': typeof appAppHomeRoute
   '/settings': typeof appAppSettingsRoute
   '/login': typeof authAuthLoginRoute
+  '/register': typeof authAuthRegisterRoute
   '/expenses/list': typeof appAppExpensesListRoute
   '/groups/list': typeof appAppGroupsListRoute
   '/expenses/$id': typeof fullscreenFullscreenExpensesIdRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/(app)/_app/home': typeof appAppHomeRoute
   '/(app)/_app/settings': typeof appAppSettingsRoute
   '/(auth)/_auth/login': typeof authAuthLoginRoute
+  '/(auth)/_auth/register': typeof authAuthRegisterRoute
   '/(app)/_app/expenses/list': typeof appAppExpensesListRoute
   '/(app)/_app/groups/list': typeof appAppGroupsListRoute
   '/(fullscreen)/_fullscreen/expenses/$id': typeof fullscreenFullscreenExpensesIdRoute
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/settings'
     | '/login'
+    | '/register'
     | '/expenses/list'
     | '/groups/list'
     | '/expenses/$id'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/settings'
     | '/login'
+    | '/register'
     | '/expenses/list'
     | '/groups/list'
     | '/expenses/$id'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/(app)/_app/home'
     | '/(app)/_app/settings'
     | '/(auth)/_auth/login'
+    | '/(auth)/_auth/register'
     | '/(app)/_app/expenses/list'
     | '/(app)/_app/groups/list'
     | '/(fullscreen)/_fullscreen/expenses/$id'
@@ -265,6 +277,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof appAppRouteImport
       parentRoute: typeof appRoute
+    }
+    '/(auth)/_auth/register': {
+      id: '/(auth)/_auth/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof authAuthRegisterRouteImport
+      parentRoute: typeof authAuthRoute
     }
     '/(auth)/_auth/login': {
       id: '/(auth)/_auth/login'
@@ -370,10 +389,12 @@ const appRouteWithChildren = appRoute._addFileChildren(appRouteChildren)
 
 interface authAuthRouteChildren {
   authAuthLoginRoute: typeof authAuthLoginRoute
+  authAuthRegisterRoute: typeof authAuthRegisterRoute
 }
 
 const authAuthRouteChildren: authAuthRouteChildren = {
   authAuthLoginRoute: authAuthLoginRoute,
+  authAuthRegisterRoute: authAuthRegisterRoute,
 }
 
 const authAuthRouteWithChildren = authAuthRoute._addFileChildren(

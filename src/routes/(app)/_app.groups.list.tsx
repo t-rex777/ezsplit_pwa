@@ -1,9 +1,10 @@
 import { groupsService } from "@/api/services/groups";
+import type { User } from "@/api/services/users";
+import GroupListingCard from "@/components/group/groupListingCard";
 import { Button } from "@/components/ui/button";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Plus, Users } from "lucide-react";
-import GroupListingCard from "@/components/group/groupListingCard";
 
 export const Route = createFileRoute("/(app)/_app/groups/list")({
   component: GroupsPage,
@@ -44,13 +45,17 @@ function GroupsPage() {
             <h3 className="text-lg font-medium text-muted-foreground mb-2">
               No groups yet
             </h3>
+
             <p className="text-sm text-muted-foreground mb-6 max-w-xs">
               Create your first group to start splitting expenses with friends.
             </p>
-            <Button className="rounded-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Group
-            </Button>
+
+            <Link to="/groups/new">
+              <Button className="rounded-full">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Group
+              </Button>
+            </Link>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
@@ -58,7 +63,7 @@ function GroupsPage() {
               <GroupListingCard
                 key={group.id}
                 group={group}
-                allUsers={allUsers}
+                allUsers={allUsers as User[]}
               />
             ))}
           </div>
