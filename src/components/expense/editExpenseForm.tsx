@@ -98,7 +98,12 @@ const EditExpenseForm = ({
         return {
           id: group.id,
           name: group.attributes.name,
-          members: membersOptions,
+          members: membersOptions.filter((member) => {
+            const groupMembers =
+              group.relationships?.users?.data.map((user) => user.id) ?? [];
+
+            return groupMembers.includes(member.id);
+          }),
         };
       });
     },

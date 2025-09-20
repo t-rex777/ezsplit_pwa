@@ -43,11 +43,15 @@ export const authService = {
   },
 
   // Register new user
-  register: async (userData: RegisterRequest): Promise<User> => {
+  register: async (
+    userData: RegisterRequest,
+    token?: string,
+  ): Promise<User> => {
     const response = await apiCall<ApiResponse<User>>({
       method: "POST",
       url: "/user_registers",
       data: {
+        token: token,
         user: userData,
       },
     });

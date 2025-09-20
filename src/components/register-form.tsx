@@ -32,16 +32,18 @@ export function RegisterForm({
       const token = searchParams.get("token");
 
       try {
-        const response = await authService.register({
-          email_address: value.email_address,
-          password: value.password,
-          password_confirmation: value.password_confirmation,
-          first_name: value.first_name,
-          last_name: value.last_name,
-          phone: value.phone || undefined,
-          date_of_birth: value.date_of_birth || undefined,
-          ...(token !== null && { token }),
-        });
+        const response = await authService.register(
+          {
+            email_address: value.email_address,
+            password: value.password,
+            password_confirmation: value.password_confirmation,
+            first_name: value.first_name,
+            last_name: value.last_name,
+            phone: value.phone || undefined,
+            date_of_birth: value.date_of_birth || undefined,
+          },
+          token === null ? undefined : token,
+        );
 
         await queryClient.setQueryData(["session"], response);
         await navigate({ to: "/home" });

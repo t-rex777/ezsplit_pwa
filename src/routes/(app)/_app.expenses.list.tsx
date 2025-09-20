@@ -1,8 +1,12 @@
 import { expenseService } from "@/api/services/expenses";
+import type { User } from "@/api/services/users";
 import { ExpenseCard } from "@/components/expense/expenseCard";
 import { ExpenseListEmpty } from "@/components/expense/expenseListEmpty";
 import { Button } from "@/components/ui/button";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import {
+  useQueryClient,
+  useSuspenseInfiniteQuery,
+} from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Plus, Receipt } from "lucide-react";
 
@@ -11,6 +15,10 @@ export const Route = createFileRoute("/(app)/_app/expenses/list")({
 });
 
 function ExpensesPage() {
+  const queryClient = useQueryClient();
+
+  const session = queryClient.getQueryData(["session"]) as User;
+
   const { data: expenses } = useSuspenseInfiniteQuery({
     queryKey: ["expenses"],
     getNextPageParam: (lastPage) =>
@@ -53,7 +61,11 @@ function ExpensesPage() {
                 key={expense.id}
                 className="cursor-pointer"
               >
-                <ExpenseCard key={expense.id} expense={expense} />
+                <ExpenseCard
+                  key={expense.id}
+                  expense={expense}
+                  currentUserId={session?.attributes.id}
+                />
               </Link>
             ))}
           </div>

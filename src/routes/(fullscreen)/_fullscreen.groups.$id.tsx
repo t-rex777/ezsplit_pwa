@@ -27,6 +27,8 @@ function RouteComponent() {
     from: "/(fullscreen)/_fullscreen/groups/$id",
   });
 
+  const session = queryClient.getQueryData(["session"]) as User | undefined;
+
   const {
     data: { data: group, included },
   } = useSuspenseQuery({
@@ -62,9 +64,13 @@ function RouteComponent() {
     await createGroupMutation.mutateAsync(values);
   };
 
-  const userIds = group.relationships?.users?.data.map((user) => user.id) ?? [];
+  const userIds =
+    group.relationships?.users?.data
+      .map((user) => user.id)
+      .filter((id) => Number(id) !== Number(session?.attributes.id)) ?? [];
+
   const users = included?.filter(
-    (user) => userIds?.includes(user.id) && user.type === "user",
+    (user) => userIds.includes(user.id) && user.type === "user",
   ) as User[] | undefined;
 
   const defaultValues: EditGroupFormData = {
