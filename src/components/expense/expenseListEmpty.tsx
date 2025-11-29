@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Plus, Receipt } from "lucide-react";
 import { type JSX, memo } from "react";
 import { Button } from "../ui/button";
@@ -12,10 +13,13 @@ const ExpenseListEmpty = memo((): JSX.Element => {
       <p className="text-sm text-muted-foreground mb-6 max-w-xs">
         Start tracking your group expenses by adding your first expense.
       </p>
-      <Button className="rounded-full">
-        <Plus className="h-4 w-4 mr-2" />
-        Add Expense
-      </Button>
+
+      <Link to="/expenses/new">
+        <Button className="rounded-full">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Expense
+        </Button>
+      </Link>
     </div>
   );
 });

@@ -1,0 +1,278 @@
+---
+alwaysApply: true
+description: "Routing and navigation patterns using TanStack Router for the expense splitting app"
+---
+
+# Routing & Navigation Patterns - TanStack Router
+
+## File-Based Routing Structure
+
+### Route Organization
+```
+src/routes/
+├── __root.tsx                    # Root layout with authentication
+├── (auth)/                       # Authentication routes group
+│   ├── _auth.tsx                # Auth layout wrapper
+│   └── _auth.login.tsx          # Login page
+├── (app)/                        # Protected app routes group
+│   ├── _app.tsx                 # App layout with navigation
+│   ├── _app.home.tsx            # Home dashboard
+│   ├── _app.expenses.list.tsx   # Expenses list page
+│   ├── _app.groups.list.tsx     # Groups list page
+│   └── _app.settings.tsx        # Settings page
+└── (fullscreen)/                 # Full-screen routes
+    ├── _fullscreen.tsx           # Full-screen layout
+    ├── _fullscreen.expenses.$id.tsx    # Expense detail/edit
+    ├── _fullscreen.expenses.new.tsx    # New expense form
+    ├── _fullscreen.groups.$id.tsx      # Group detail/edit
+    └── _fullscreen.groups.new.tsx      # New group form
+```
+
+## Route Naming Conventions
+
+### Route Files
+- Use descriptive names: `_app.expenses.list.tsx`
+- Group related routes: `(auth)`, `(app)`, `(fullscreen)`
+- Use `$` for dynamic parameters: `expenses.$id.tsx`
+- Follow the pattern: `group.resource.action.tsx`
+
+### Route IDs
+```typescript
+// ✅ Good - descriptive and hierarchical
+"/(app)/expenses/list"
+"/(fullscreen)/expenses/$id"
+"/(auth)/login"
+
+// ❌ Avoid - unclear or inconsistent
+"/expenses"
+"/expense-detail"
+"/login-page"
+```
+
+## Layout Patterns
+
+### Root Layout (`__root.tsx`)
+```typescript
+export const Route = createRootRouteWithContext<MyRouterContext>()({
+  wrapInSuspense: true,
+  beforeLoad: async ({ context }) => {
+    // Global authentication check
+    // Initialize app state
+    // Load user session
+  },
+  component: () => (
+    <Suspense fallback={<ShowAppLoading />}>
+      <Outlet />
+      <Toaster />
+      <ReactQueryDevtools />
+    </Suspense>
+  ),
+});
+```
+
+### Group Layouts
+```typescript
+// App layout with bottom navigation
+export const Route = createFileRoute("/(app)/_app")({
+  component: RouteComponent,
+  loader: ({ context }) => {
+    // Check authentication
+    // Redirect if not authenticated
+  },
+});
+
+// Full-screen layout for forms/details
+export const Route = createFileRoute("/(fullscreen)/_fullscreen")({
+  component: FullscreenLayout,
+});
+```
+
+## Route Protection & Authentication
+
+### Authentication Guards
+```typescript
+export const Route = createFileRoute("/(app)/_app")({
+  loader: ({ context }) => {
+    const session = context.queryClient.getQueryData(["session"]);
+    
+    if (!session) {
+      throw redirect({ to: "/login" });
+    }
+  },
+});
+```
+
+### Role-Based Access
+```typescript
+export const Route = createFileRoute("/(app)/admin")({
+  loader: ({ context }) => {
+    const user = context.queryClient.getQueryData(["session"]);
+    
+    if (user?.role !== "admin") {
+      throw redirect({ to: "/unauthorized" });
+    }
+  },
+});
+```
+
+## Data Loading Patterns
+
+### Route Loaders
+```typescript
+export const Route = createFileRoute("/(app)/expenses/$id")({
+  loader: async ({ params, context }) => {
+    // Load expense data
+    const expense = await context.queryClient.fetchQuery({
+      queryKey: ["expense", params.id],
+      queryFn: () => expenseService.getById(params.id),
+    });
+    
+    return { expense };
+  },
+});
+```
+
+### Parallel Data Loading
+```typescript
+export const Route = createFileRoute("/(app)/dashboard")({
+  loader: async ({ context }) => {
+    // Load multiple data sources in parallel
+    const [expenses, groups, balances] = await Promise.all([
+      context.queryClient.fetchQuery({
+        queryKey: ["expenses", "recent"],
+        queryFn: () => expenseService.getRecent(),
+      }),
+      context.queryClient.fetchQuery({
+        queryKey: ["groups"],
+        queryFn: () => groupService.getAll(),
+      }),
+      context.queryClient.fetchQuery({
+        queryKey: ["balances"],
+        queryFn: () => balanceService.getSummary(),
+      }),
+    ]);
+    
+    return { expenses, groups, balances };
+  },
+});
+```
+
+## Navigation Patterns
+
+### Programmatic Navigation
+```typescript
+import { useNavigate } from "@tanstack/react-router";
+
+const navigate = useNavigate();
+
+// Navigate to specific route
+navigate({ to: "/expenses/$id", params: { id: expenseId } });
+
+// Navigate with search params
+navigate({ 
+  to: "/expenses", 
+  search: { category: "food", date: "2024-01" } 
+});
+
+// Navigate back
+navigate({ to: ".." });
+```
+
+### Search Parameters
+```typescript
+// Define search params in route
+export const Route = createFileRoute("/(app)/expenses")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      category: search.category as string | undefined,
+      date: search.date as string | undefined,
+      page: Number(search.page) || 1,
+    };
+  },
+});
+
+// Use search params in component
+const { category, date, page } = useSearch({ from: "/(app)/expenses" });
+```
+
+## Error Handling
+
+### Route Error Boundaries
+```typescript
+export const Route = createFileRoute("/(app)/expenses")({
+  errorComponent: ({ error }) => (
+    <div className="error-container">
+      <h2>Failed to load expenses</h2>
+      <p>{error.message}</p>
+      <button onClick={() => window.location.reload()}>
+        Retry
+      </button>
+    </div>
+  ),
+});
+```
+
+### Not Found Handling
+```typescript
+export const Route = createFileRoute("/(app)/expenses/$id")({
+  notFoundComponent: () => (
+    <div className="not-found">
+      <h2>Expense not found</h2>
+      <p>The expense you're looking for doesn't exist.</p>
+      <Link to="/expenses">Back to expenses</Link>
+    </div>
+  ),
+});
+```
+
+## Performance Optimization
+
+### Route Preloading
+```typescript
+// Preload route on hover
+<Link 
+  to="/expenses/$id" 
+  params={{ id: expense.id }}
+  preload="intent"
+>
+  {expense.name}
+</Link>
+
+// Preload on mount
+useEffect(() => {
+  navigate({ to: "/expenses", preload: true });
+}, []);
+```
+
+### Lazy Loading
+```typescript
+// Lazy load route components
+const LazyExpenseDetail = lazy(() => import("./ExpenseDetail"));
+
+export const Route = createFileRoute("/(app)/expenses/$id")({
+  component: LazyExpenseDetail,
+});
+```
+
+## Testing Routes
+
+### Route Testing
+```typescript
+// Test route parameters
+expect(route.params.id).toBe("123");
+
+// Test search parameters
+expect(route.search.category).toBe("food");
+
+// Test loader data
+expect(route.loaderData.expense).toBeDefined();
+```
+
+### Navigation Testing
+```typescript
+// Test navigation calls
+expect(navigate).toHaveBeenCalledWith({
+  to: "/expenses/$id",
+  params: { id: "123" },
+});
+```

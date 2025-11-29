@@ -1,0 +1,112 @@
+---
+name: Use Suspense Query for API Data Fetching
+alwaysApply: true
+---
+
+# Use Suspense Query for API Data Fetching
+
+Always use `useSuspenseQuery` or `useSuspenseInfiniteQuery` when fetching API data. This eliminates the need for manual loading states and provides a cleaner, more predictable data flow.
+
+## Required Usage
+
+### For Single Data Fetching
+
+```typescript
+// ✅ Good - Use useSuspenseQuery
+const { data: expenses } = useSuspenseQuery({
+  queryKey: ["expenses", "list"],
+  queryFn: () => expenseService.getAll(),
+});
+
+// ❌ Avoid - Don't use regular useQuery
+const { data: expenses, isLoading, error } = useQuery({
+  queryKey: ["expenses", "list"],
+  queryFn: () => expenseService.getAll(),
+});
+```
+
+### For Infinite/Paginated Data
+
+```typescript
+// ✅ Good - Use useSuspenseInfiniteQuery
+const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery({
+  queryKey: ["expenses", "infinite"],
+  queryFn: ({ pageParam = 1 }) => expenseService.getPage(pageParam),
+  getNextPageParam: (lastPage) => lastPage.nextPage,
+});
+
+// ❌ Avoid - Don't use regular useInfiniteQuery
+const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+  queryKey: ["expenses", "infinite"],
+  queryFn: ({ pageParam = 1 }) => expenseService.getPage(pageParam),
+  getNextPageParam: (lastPage) => lastPage.nextPage,
+});
+```
+
+## Benefits
+
+1. **No Loading States**: Suspense handles loading automatically
+2. **Cleaner Code**: Eliminates `isLoading`, `isError`, and manual loading checks
+3. **Better UX**: Consistent loading behavior across the app
+4. **Error Boundaries**: Errors are handled by React Suspense boundaries
+5. **Simplified Components**: Focus on rendering data, not loading states
+
+## Error Handling
+
+Errors are automatically handled by React Suspense boundaries. Use error boundaries in your route components:
+
+```typescript
+export const Route = createFileRoute("/(app)/expenses")({
+  errorComponent: ({ error }) => (
+    <div className="error-container">
+      <h2>Failed to load expenses</h2>
+      <p>{error.message}</p>
+      <button onClick={() => window.location.reload()}>Retry</button>
+    </div>
+  ),
+});
+```
+
+## Migration from useQuery
+
+When migrating existing `useQuery` usage:
+
+1. Replace `useQuery` with `useSuspenseQuery`
+2. Remove `isLoading`, `isError`, and `error` destructuring
+3. Remove manual loading state checks
+4. Ensure the component is wrapped in a Suspense boundary
+
+## Example Component
+
+```typescript
+const ExpenseList = () => {
+  const { data: expenses } = useSuspenseQuery({
+    queryKey: ["expenses", "list"],
+    queryFn: () => expenseService.getAll(),
+  });
+
+  return (
+    <div>
+      {expenses.map(expense => (
+        <ExpenseCard key={expense.id} expense={expense} />
+      ))}
+    </div>
+  );
+};
+```
+
+## Suspense Boundaries
+
+Ensure your routes have proper Suspense boundaries:
+
+```typescript
+export const Route = createFileRoute("/(app)/_app")({
+  component: () => (
+    <Suspense fallback={<ShowAppLoading />}>
+      <Outlet />
+    </Suspense>
+  ),
+});
+```
+
+This rule ensures consistent data fetching patterns and eliminates the need for manual loading state management throughout the application.

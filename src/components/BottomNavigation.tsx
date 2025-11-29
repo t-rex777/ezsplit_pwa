@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Receipt, Settings, Users } from "lucide-react";
+import { Home, Receipt, Settings, Users, Tag } from "lucide-react";
 
 const navigationItems = [
   {
@@ -17,6 +17,11 @@ const navigationItems = [
     name: "Expenses",
     href: "/expenses/list",
     icon: Receipt,
+  },
+  {
+    name: "Categories",
+    href: "/categories",
+    icon: Tag,
   },
   {
     name: "Settings",

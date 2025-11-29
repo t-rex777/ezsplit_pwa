@@ -1,15 +1,20 @@
+import ExpensesGraph from "@/components/ExpensesGraph";
+import { InviteUserModal } from "@/components/group/inviteUserModal";
 import { Card } from "@/components/ui/card";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Home, Plus, Receipt, TrendingUp, Users } from "lucide-react";
+import { Home, Mail, Plus, Receipt, TrendingUp, Users } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/(app)/_app/home")({
   component: HomePage,
 });
 
 function HomePage() {
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
   return (
     <div className="min-h-[calc(100vh-4rem)] p-4 pb-20 animate-fade-in-scale">
-      <div className="max-w-md mx-auto">
+      <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <Home className="h-6 w-6 text-primary" />
@@ -39,6 +44,26 @@ function HomePage() {
               </div>
             </Card>
           </Link>
+        </div>
+
+        {/* Invite User Action */}
+        <div className="mb-6">
+          <Card
+            className="p-4 hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => setIsInviteModalOpen(true)}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                <Mail className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <h3 className="font-medium text-foreground">Invite User</h3>
+                <p className="text-sm text-muted-foreground">
+                  Send an invitation to join a group
+                </p>
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Overview Cards */}
@@ -75,7 +100,7 @@ function HomePage() {
         </div>
 
         {/* Quick Navigation */}
-        <div className="space-y-3">
+        {/* <div className="space-y-3">
           <h2 className="text-lg font-semibold mb-3">Quick Access</h2>
           <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
             <div className="flex items-center justify-between">
@@ -96,8 +121,18 @@ function HomePage() {
               <div className="text-sm text-muted-foreground">12 expenses</div>
             </div>
           </Card>
-        </div>
+        </div> */}
+
+        {/* Expenses Graph */}
+        <ExpensesGraph />
       </div>
+
+      {/* Invite User Modal */}
+      <InviteUserModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        groupId="default" // You might want to get this from context or props
+      />
     </div>
   );
 }

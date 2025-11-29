@@ -1,0 +1,374 @@
+---
+alwaysApply: true
+description: "State management and data fetching patterns using React Query and React hooks"
+---
+
+# State Management & Data Fetching Patterns
+
+## React Query (TanStack Query) Usage
+
+### Query Keys Structure
+```typescript
+// ✅ Good - hierarchical and descriptive
+["expenses", "list", { groupId: "123", category: "food" }]
+["user", "profile", userId]
+["group", groupId, "members"]
+["expense", expenseId, "participants"]
+
+// ❌ Avoid - flat or unclear
+["expenses"]
+["user123"]
+["data"]
+```
+
+### Query Definitions
+```typescript
+// Basic query
+const { data: expenses, isLoading, error } = useQuery({
+  queryKey: ["expenses", "list"],
+  queryFn: () => expenseService.getAll(),
+  staleTime: 5 * 60 * 1000, // 5 minutes
+  gcTime: 10 * 60 * 1000,   // 10 minutes
+});
+
+// Query with parameters
+const { data: expense } = useQuery({
+  queryKey: ["expense", expenseId],
+  queryFn: () => expenseService.getById(expenseId),
+  enabled: !!expenseId, // Only run when expenseId exists
+});
+```
+
+### Mutation Patterns
+```typescript
+const createExpenseMutation = useMutation({
+  mutationFn: (expenseData: CreateExpenseRequest) => 
+    expenseService.create(expenseData),
+  onSuccess: (newExpense) => {
+    // Invalidate related queries
+    queryClient.invalidateQueries({ queryKey: ["expenses"] });
+    queryClient.invalidateQueries({ queryKey: ["groups", groupId] });
+    
+    // Show success message
+    toast.success("Expense created successfully");
+    
+    // Navigate to new expense
+    navigate({ to: "/expenses/$id", params: { id: newExpense.id } });
+  },
+  onError: (error) => {
+    toast.error(`Failed to create expense: ${error.message}`);
+  },
+});
+```
+
+## Local State Management
+
+### useState for Simple State
+```typescript
+// ✅ Good - simple, local state
+const [isEditing, setIsEditing] = useState(false);
+const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+const [formData, setFormData] = useState<ExpenseFormData>({
+  name: "",
+  amount: 0,
+  category: "",
+});
+
+// ❌ Avoid - complex state in useState
+const [appState, setAppState] = useState({
+  user: null,
+  expenses: [],
+  groups: [],
+  isLoading: false,
+  error: null,
+});
+```
+
+### useReducer for Complex State
+```typescript
+interface ExpenseFormState {
+  data: ExpenseFormData;
+  errors: Record<string, string>;
+  isSubmitting: boolean;
+  isValid: boolean;
+}
+
+type ExpenseFormAction = 
+  | { type: "SET_FIELD"; field: string; value: any }
+  | { type: "SET_ERRORS"; errors: Record<string, string> }
+  | { type: "SET_SUBMITTING"; isSubmitting: boolean }
+  | { type: "RESET" };
+
+const expenseFormReducer = (state: ExpenseFormState, action: ExpenseFormAction): ExpenseFormState => {
+  switch (action.type) {
+    case "SET_FIELD":
+      return {
+        ...state,
+        data: { ...state.data, [action.field]: action.value },
+      };
+    case "SET_ERRORS":
+      return { ...state, errors: action.errors };
+    case "SET_SUBMITTING":
+      return { ...state, isSubmitting: action.isSubmitting };
+    case "RESET":
+      return initialState;
+    default:
+      return state;
+  }
+};
+```
+
+## Custom Hooks
+
+### Data Fetching Hooks
+```typescript
+export const useExpenses = (groupId?: string) => {
+  return useQuery({
+    queryKey: ["expenses", "list", { groupId }],
+    queryFn: () => expenseService.getByGroup(groupId),
+    enabled: !!groupId,
+  });
+};
+
+export const useExpense = (expenseId: string) => {
+  return useQuery({
+    queryKey: ["expense", expenseId],
+    queryFn: () => expenseService.getById(expenseId),
+    enabled: !!expenseId,
+  });
+};
+```
+
+### Form Management Hooks
+```typescript
+export const useExpenseForm = (initialData?: Partial<ExpenseFormData>) => {
+  const [formData, setFormData] = useState<ExpenseFormData>({
+    name: "",
+    amount: 0,
+    category: "",
+    participants: [],
+    ...initialData,
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const updateField = (field: keyof ExpenseFormData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when field is updated
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+    
+    if (formData.amount <= 0) {
+      newErrors.amount = "Amount must be greater than 0";
+    }
+    
+    if (formData.participants.length === 0) {
+      newErrors.participants = "At least one participant is required";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  return {
+    formData,
+    errors,
+    updateField,
+    validate,
+    setFormData,
+    setErrors,
+  };
+};
+```
+
+## Context Usage
+
+### App Context
+```typescript
+interface AppContextType {
+  user: User | null;
+  currentGroup: Group | null;
+  setCurrentGroup: (group: Group | null) => void;
+  refreshUser: () => Promise<void>;
+}
+
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export const AppProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [currentGroup, setCurrentGroup] = useState<Group | null>(null);
+
+  const refreshUser = async () => {
+    try {
+      const userData = await authService.getProfile();
+      setUser(userData);
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    refreshUser();
+  }, []);
+
+  return (
+    <AppContext.Provider value={{
+      user,
+      currentGroup,
+      setCurrentGroup,
+      refreshUser,
+    }}>
+      {children}
+    </AppContext.Provider>
+  );
+};
+
+export const useApp = () => {
+  const context = useContext(AppContext);
+  if (context === undefined) {
+    throw new Error("useApp must be used within an AppProvider");
+  }
+  return context;
+};
+```
+
+## Optimistic Updates
+
+### Optimistic UI Updates
+```typescript
+const updateExpenseMutation = useMutation({
+  mutationFn: (data: UpdateExpenseRequest) => 
+    expenseService.update(expenseId, data),
+  onMutate: async (newData) => {
+    // Cancel outgoing refetches
+    await queryClient.cancelQueries({ queryKey: ["expense", expenseId] });
+
+    // Snapshot previous value
+    const previousExpense = queryClient.getQueryData(["expense", expenseId]);
+
+    // Optimistically update
+    queryClient.setQueryData(["expense", expenseId], (old: Expense) => ({
+      ...old,
+      ...newData,
+    }));
+
+    return { previousExpense };
+  },
+  onError: (err, newData, context) => {
+    // Rollback on error
+    if (context?.previousExpense) {
+      queryClient.setQueryData(["expense", expenseId], context.previousExpense);
+    }
+  },
+  onSettled: () => {
+    // Always refetch after error or success
+    queryClient.invalidateQueries({ queryKey: ["expense", expenseId] });
+  },
+});
+```
+
+## Error Handling
+
+### Error Boundaries
+```typescript
+class ErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Error caught by boundary:", error, errorInfo);
+    // Log to error reporting service
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-boundary">
+          <h2>Something went wrong</h2>
+          <button onClick={() => this.setState({ hasError: false })}>
+            Try again
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+```
+
+### Error Handling in Queries
+```typescript
+const { data, error, isError } = useQuery({
+  queryKey: ["expenses"],
+  queryFn: expenseService.getAll,
+  retry: (failureCount, error) => {
+    // Don't retry on 4xx errors
+    if (error.status >= 400 && error.status < 500) {
+      return false;
+    }
+    // Retry up to 3 times for other errors
+    return failureCount < 3;
+  },
+  retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+});
+
+if (isError) {
+  return (
+    <div className="error-state">
+      <p>Failed to load expenses</p>
+      <button onClick={() => refetch()}>Retry</button>
+    </div>
+  );
+}
+```
+
+## Performance Optimization
+
+### Query Optimization
+```typescript
+// Use select to transform data
+const { data: expenseCount } = useQuery({
+  queryKey: ["expenses"],
+  queryFn: expenseService.getAll,
+  select: (expenses) => expenses.length,
+});
+
+// Use placeholder data
+const { data: expenses } = useQuery({
+  queryKey: ["expenses"],
+  queryFn: expenseService.getAll,
+  placeholderData: (previousData) => previousData,
+});
+
+// Implement infinite queries for pagination
+const {
+  data,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+} = useInfiniteQuery({
+  queryKey: ["expenses", "infinite"],
+  queryFn: ({ pageParam = 1 }) => 
+    expenseService.getPage(pageParam),
+  getNextPageParam: (lastPage) => lastPage.nextPage,
+});
+```

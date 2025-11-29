@@ -1,0 +1,184 @@
+---
+alwaysApply: true
+description: "Code quality standards and best practices for ezsplit_pwa project"
+---
+
+# Code Quality Standards & Best Practices
+
+## Project Architecture
+
+### File Organization
+- **Routes**: Use TanStack Router with file-based routing in `src/routes/`
+- **Components**: Organize by feature in `src/components/{feature}/`
+- **Services**: API services in `src/api/services/` following REST patterns
+- **Types**: Use TypeScript interfaces with descriptive names
+- **Utils**: Common utilities in `src/lib/`
+
+### Import Organization
+```typescript
+// 1. External libraries
+import { useState, useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+
+// 2. Internal imports (use @/ alias)
+import { authService } from "@/api/services/auth";
+import { Button } from "@/components/ui/button";
+
+// 3. Relative imports
+import { ExpenseCard } from "./expenseCard";
+```
+
+## TypeScript Standards
+
+### Interface Naming
+- Use PascalCase for interfaces: `IExpenseCardProps`, `LoginRequest`
+- Prefix interfaces with `I` when they represent props: `IComponentProps`
+- Use descriptive names that indicate purpose: `ExpenseResource`, `UserProfile`
+
+### Type Definitions
+```typescript
+// ✅ Good
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+// ❌ Avoid
+export interface Login {
+  e: string;
+  p: string;
+}
+```
+
+## React Component Standards
+
+### Component Structure
+```typescript
+import type { ComponentProps } from "./types";
+import { memo } from "react";
+
+interface IComponentProps {
+  // Props definition
+}
+
+const ComponentName = memo(({ prop1, prop2 }: IComponentProps): JSX.Element => {
+  // Component logic
+  
+  return (
+    // JSX
+  );
+});
+
+ComponentName.displayName = "ComponentName";
+
+export { ComponentName };
+```
+
+### Props Interface
+- Always define explicit props interface
+- Use descriptive prop names
+- Include JSDoc comments for complex props
+- Make props required unless explicitly optional
+
+### Memoization
+- Use `memo()` for components that receive stable props
+- Always set `displayName` for debugging
+- Consider performance implications before memoizing
+
+## API Service Standards
+
+### Service Structure
+```typescript
+export const serviceName = {
+  // Method with clear naming
+  methodName: async (params: ParamType): Promise<ReturnType> => {
+    const response = await apiCall<ApiResponse<ReturnType>>({
+      method: "HTTP_METHOD",
+      url: "/endpoint",
+      data: params,
+    });
+    return response.data;
+  },
+};
+```
+
+### Error Handling
+- Use try-catch blocks for async operations
+- Return meaningful error messages
+- Handle both network and application errors
+- Use proper HTTP status codes
+
+## Code Readability
+
+### Variable Naming
+- Use descriptive names: `expenseAmount` not `amt`
+- Use camelCase for variables and functions
+- Use PascalCase for components and interfaces
+- Use UPPER_SNAKE_CASE for constants
+
+### Function Naming
+- Use verb-noun pattern: `getUserProfile`, `createExpense`
+- Be specific: `validateEmailFormat` not `validate`
+- Use consistent prefixes: `get`, `create`, `update`, `delete`
+
+### Comments and Documentation
+- Add JSDoc for complex functions
+- Explain business logic, not obvious code
+- Keep comments up-to-date with code changes
+- Use TODO comments for future improvements
+
+## Performance Standards
+
+### React Optimization
+- Use `useCallback` for expensive computations
+- Use `useMemo` for derived state
+- Avoid inline object/function creation in render
+- Implement proper dependency arrays
+
+### Data Fetching
+- Use React Query for server state management
+- Implement proper caching strategies
+- Handle loading and error states gracefully
+- Use optimistic updates where appropriate
+
+## Testing Considerations
+
+### Component Testing
+- Test component behavior, not implementation
+- Mock external dependencies
+- Test edge cases and error states
+- Use meaningful test descriptions
+
+### Service Testing
+- Mock API calls
+- Test success and failure scenarios
+- Verify error handling
+- Test data transformation logic
+
+## Accessibility
+
+### Semantic HTML
+- Use proper heading hierarchy
+- Include alt text for images
+- Use ARIA labels when necessary
+- Ensure keyboard navigation works
+
+### Screen Reader Support
+- Test with screen readers
+- Use semantic HTML elements
+- Provide skip navigation links
+- Ensure proper focus management
+
+## Security
+
+### Input Validation
+- Validate all user inputs
+- Sanitize data before rendering
+- Use proper authentication checks
+- Implement CSRF protection
+
+### Data Handling
+- Never expose sensitive data in client code
+- Use HTTPS for all API calls
+- Implement proper session management
+- Follow OWASP security guidelines
