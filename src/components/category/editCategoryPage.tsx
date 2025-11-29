@@ -158,12 +158,12 @@ const CategoryPage = (): React.JSX.Element => {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-4">Categories</h1>
+    <div className="container mx-auto p-3 max-w-2xl">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold mb-3">Categories</h1>
 
         {/* Add new category form */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-4">
           <Input
             placeholder="Enter category name"
             value={newCategoryName}
@@ -183,20 +183,20 @@ const CategoryPage = (): React.JSX.Element => {
       </div>
 
       {/* Categories list */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {categories.length === 0 ? (
           <Card>
-            <CardContent className="p-6 text-center text-muted-foreground">
+            <CardContent className="p-4 text-center text-muted-foreground">
               No categories found. Create your first category above.
             </CardContent>
           </Card>
         ) : (
           categories.map((category) => (
-            <Card key={category.id}>
-              <CardContent className="p-4">
+            <Card className="py-4" key={category.id}>
+              <CardContent>
                 {editingCategory?.id === category.id ? (
                   // Edit mode
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-1 items-center">
                     <Input
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
@@ -223,7 +223,7 @@ const CategoryPage = (): React.JSX.Element => {
                 ) : (
                   // View mode
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       {category.attributes.icon && (
                         <span className="text-lg">
                           {category.attributes.icon}
@@ -247,7 +247,7 @@ const CategoryPage = (): React.JSX.Element => {
                         />
                       )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <Button
                         size="sm"
                         variant="ghost"

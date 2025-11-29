@@ -9,6 +9,17 @@ export interface Group
     created_by_id: string;
     created_at: string;
     updated_at: string;
+    expense_summary: {
+      total_expenses: number;
+      total_amount: number;
+      currency: string;
+      current_user_balance: {
+        total_paid: number;
+        total_owed: number;
+        net_balance: number;
+        status: string;
+      };
+    };
   }> {
   type: "group";
   relationships?: {

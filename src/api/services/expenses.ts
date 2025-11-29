@@ -12,6 +12,7 @@ export interface Expense
     settled: boolean;
     created_at: string;
     updated_at: string;
+    current_user_amount: string;
     payer: {
       id: string;
       name: string;
